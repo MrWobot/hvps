@@ -1,0 +1,37 @@
+.debugging-menu{
+	display:none;
+	flex-direction:column;
+	position:relative;
+	&.visible{
+		display:flex;
+	}
+	background-color:var(--color-1);
+	border-left:2px solid var(--color-2);
+	padding:5px;
+	box-sizing:border-box;
+	.sample-half-cycle-button{
+		background-color:#42f59c;
+	}
+	.sample-full-cycle-button{
+		background-color:#f57542;
+	}
+	.calculate-inductance-button{
+		background-color:#326fa8;
+	}
+	.samples{
+		background-color:black;
+		flex-grow:1;
+		.title{
+			color:var(--color-5);
+			font-weight:bold;
+			font-size:12px;
+			text-align:left;
+			padding:3px;
+		}
+		.entries{
+			box-sizing:border-box;
+			padding:3px;
+			overflow-y:auto;
+		}
+	}
+}

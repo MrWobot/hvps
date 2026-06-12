@@ -1,0 +1,43 @@
+.state{
+	height:20px;
+	box-sizing:border-box;
+	padding:1px 3px 3px 3px;
+	font-weight:bold;
+	color:#2cffff;
+	.text{
+		margin-right: auto;
+		float: left;
+		background-color:black;
+		padding-right: 5px;
+		padding-left: 5px;
+		border-radius: 4px;
+	}
+	&.unknown{
+		background-color:var(--color-state-unknown);
+		color:var(--color-state-unknown);
+	}
+	&.live{
+		background-color:var(--color-state-live);
+		color:var(--color-state-live);
+	}
+	&.idle{
+		background-color:var(--color-state-idle);
+		color:var(--color-state-idle);
+	}
+	&.shutting-down{
+		background-color:var(--color-state-shutting-down);
+		color:var(--color-state-shutting-down);
+	}
+	&.shut-down{
+		background-color:var(--color-state-shut-down);
+		color:var(--color-state-shut-down);
+	}
+	&.running-system-checks, &.sampling-full-cycle, &.sampling-half-cycle, &.calculating-inductance{
+		background-color:var(--color-state-running-system-checks);
+		color:var(--color-state-running-system-checks);
+	}
+	&.error{
+		background-color:var(--color-state-error);
+		color:var(--color-state-error);
+	}
+}

@@ -1,0 +1,14 @@
+.chart-window{
+	&.generic-window > .inner > .tab {
+		height:20px;
+		.name{
+			line-height:20px;
+		}
+		.button-close{
+			outline:0;
+			border:0;
+			cursor:pointer;
+			width:20px;
+		}
+	}
+}

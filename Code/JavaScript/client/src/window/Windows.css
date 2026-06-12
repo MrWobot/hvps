@@ -1,0 +1,56 @@
+.generic-window{
+	position:absolute;
+	display:none;
+}.generic-window.visible{
+	display:block;
+}
+.generic-window > .inner{
+	background-color:var(--color-1);
+	border-radius:0px;
+	display:flex;
+	flex-direction:column;
+	position:relative;
+    box-shadow: 0px 0px 6px 0px rgb(0 0 0 / 85%);
+    color: var(--color-5);
+}
+.generic-window > .inner > .tab{
+	height:30px;
+	display:flex;
+	flex-direction:row;
+	padding:3px;
+    line-height: 30px;
+	border-bottom:1px solid var(--color-3);
+}
+.generic-window > .inner > .tab > .icon-button{
+	height:30px;
+	padding:0px;
+	background-color:transparent;
+}
+.generic-window > .inner > .tab > .name{
+	flex-basis:100%;
+	line-height:30px;
+	text-overflow: ellipsis;
+	overflow:hidden;
+	white-space: nowrap;
+}
+.generic-window > .inner > .tab > .filler{
+	width:100%;
+}
+.generic-window > .inner > .tab > .name,
+.generic-window > .inner > .tab > .filler{
+	cursor:move;
+}
+.generic-window > .inner > .tab > .icon-button >.inner,
+.generic-window > .inner > .tab > .icon-button >.inner > .icon,
+.generic-window > .inner > .tab > .icon-button >.inner > .icon >img{
+	height:100%;
+	padding:0px;
+	background-color:transparent;
+	box-shadow:none;
+}
+.generic-window > .inner .main{
+	height:100%;
+	display:flex;
+	overflow-y:auto;
+	flex-direction:column;
+}

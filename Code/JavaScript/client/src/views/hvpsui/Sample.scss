@@ -1,0 +1,42 @@
+.sample{
+	background-color:var(--color-2);
+	color:var(--color-4);
+	border-radius:3px;
+	box-sizing:border-box;
+	padding:6px;
+	cursor:pointer;
+	margin-top:3px;
+	display:flex;
+	flex-direction:row;
+	.label{
+		flex-grow:1;
+		flex-bias:0;
+		line-height:18px;
+	}
+	.toggle-menu-button{
+		height:18px;
+	}
+}
+.sample-menu{
+	display:none;
+}
+.sample-menu.visible{
+	display:flex;
+	position:fixed;
+    background-color: var(--color-1);
+	padding:3px;
+	box-sizing:border-box;
+	border-radius:3px;
+	button{
+		outline:0;
+		border:0;
+		color:var(--color-4);
+		background-color: var(--color-2);
+		border-radius:3px;
+		margin-top:3px;
+		cursor:pointer;
+		&:hover{
+			color:white;
+		}
+	}
+}
