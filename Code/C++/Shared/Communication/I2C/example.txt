@@ -1,0 +1,40 @@
+LM75A lm75a(i2c); // 0x48 is the default I2C address for LM75A
+    // Create an instance of the MPU6050 sensor
+    MPU6050 mpu6050(i2c); // 0x68 is the default I2C address for MPU6050
+    mpu6050.Initialize();
+    while (1) {
+        //ssd1306.SetPixel(10, 10, true);
+        //ssd1306.SetPixel(11, 11, true);
+        //ssd1306.SetPixel(20, 20, false);
+        //ssd1306.EntireDisplayOn(true);
+        
+        /*LOG_INFO("Running HVPSController loop");
+        //i2c.scanAndLog();
+
+        // Read the temperature from the LM75A sensor
+        bool successful;
+        float temperature = lm75a.GetTemperature(successful);
+        if (successful) {
+            LOG_INFO("Temperature: %.2f°C", temperature);
+        } else {
+            LOG_ERROR("Failed to read temperature");
+        }
+
+        feedWatchdog();
+        // Read the acceleration from the MPU6050 sensor
+        float ax, ay, az;
+        if (mpu6050.GetAcceleration(ax, ay, az) == ESP_OK) {
+            LOG_INFO("Acceleration: ax=%.2f g, ay=%.2f g, az=%.2f g", ax, ay, az);
+        } else {
+            LOG_ERROR("Failed to read acceleration");
+        }
+
+        feedWatchdog();
+        // Read the gyroscope data from the MPU6050 sensor
+        float gx, gy, gz;
+        if (mpu6050.GetGyroscope(gx, gy, gz) == ESP_OK) {
+            LOG_INFO("Gyroscope: gx=%.2f °/s, gy=%.2f °/s, gz=%.2f °/s", gx, gy, gz);
+        } else {
+            LOG_ERROR("Failed to read gyroscope");
+        }
+*/
