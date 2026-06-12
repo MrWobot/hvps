@@ -1,0 +1,120 @@
+import eventEnable from '../core/eventEnable';
+import isNullOrUndefined from '../core/isNullOrUndefined';
+import NativeAPI from './NativeAPI';
+
+import {
+	MessageTypes,
+	TicketedMessageType,
+	ConnectToBluetoothDeviceRequest,
+	ConnectToBluetoothDeviceResponse,
+	ConsoleMessage,
+	DisconnectedMessage,
+	ErrorMessage,
+	ClearLoggedErrorsMessage,
+	CoreDumpSummaryMessage,
+	GetAvailableBluetoothDevicesRequest,
+	GetAvailableBluetoothDevicesResponse,
+	LastAbortMessage,
+	LiveDataMessage,
+	RunSystemChecksOnlyMessage,
+	StartMessage,
+	StateChangedMessage,
+	StopMessage,
+	ShutDownMessage,
+	TestMessage,
+	SampleHalfCycleMessage,
+	SampleFullCycleMessage,
+	CalculateInductanceMessage,
+	SampleDataMessage
+} from '../generated/messages';
+class HVPSUIAPI{
+	static shutDown(){
+		NativeAPI.send(ShutDownMessage.toJSON());
+	}
+	static start(){
+		NativeAPI.send(StartMessage.toJSON());
+	}
+	static stop(){
+		NativeAPI.send(StopMessage.toJSON());
+	}
+	static runSystemChecksOnly(){
+		NativeAPI.send(RunSystemChecksOnlyMessage.toJSON());
+	}
+	static sampleHalfCycle(){
+		NativeAPI.send(SampleHalfCycleMessage.toJSON());
+	}
+	static sampleFullCycle(){
+		NativeAPI.send(SampleFullCycleMessage.toJSON());
+	}
+	static calculateInductance(){
+		NativeAPI.send(CalculateInductanceMessage.toJSON());
+	}
+	static getAvailableBluetoothDevices(){
+		return NativeAPI.ticketedSend(GetAvailableBluetoothDevicesRequest.toJSON(), 30000)
+		.then(res=>GetAvailableBluetoothDevicesResponse.fromJSON(res));
+	}
+	static connectToBluetoothDevice(address){
+		return NativeAPI.ticketedSend(ConnectToBluetoothDeviceRequest.toJSON({address}), 30000)
+		.then(res=>ConnectToBluetoothDeviceResponse.fromJSON(res));
+	}
+	static test(params){
+		NativeAPI.send(TestMessage.toJSON(params));
+	}
+	static clearLoggedErrors(){
+		NativeAPI.send(ClearLoggedErrorsMessage.toJSON());
+	}
+	static _handleIncomingMessage({message}){
+		console.log(message);
+		switch(message[MessageTypes.type]){
+			case MessageTypes.bluetoothDeviceDisconnected:
+				HVPSUIAPI.dispatchEvent({type:'disconnected'});
+				break;
+			case MessageTypes.consoleMessage:
+				var consoleMessage = ConsoleMessage.fromJSON(message);
+				HVPSUIAPI.dispatchEvent({type:'consoleMessage', consoleMessage});
+				break;
+			case MessageTypes.error:
+				HVPSUIAPI.dispatchEvent({
+					type:'errorMessage',
+					errorMessage:ErrorMessage.fromJSON(message)
+				});
+				break;
+			case MessageTypes.coreDumpSummary:
+				HVPSUIAPI.dispatchEvent({
+					type:'coreDumpSummaryMessage',
+					coreDumpSummaryMessage:CoreDumpSummaryMessage.fromJSON(message)
+				});
+				break;
+			case MessageTypes.lastAbort:
+				HVPSUIAPI.dispatchEvent({
+					type:'lastAbortMessage',
+					lastAbortMessage:LastAbortMessage.fromJSON(message)
+				});
+				break;
+			case MessageTypes.stateChanged:
+				console.log(message);
+				HVPSUIAPI.dispatchEvent({
+					type:'stateChangedMessage',
+					stateChangedMessage:StateChangedMessage.fromJSON(message)
+				});
+				break;
+			case MessageTypes.liveData:
+				HVPSUIAPI.dispatchEvent({
+					type:'liveDataMessage',
+					liveDataMessage:LiveDataMessage.fromJSON(message)
+				});
+				break;
+			case MessageTypes.sampleData:
+				HVPSUIAPI.dispatchEvent({
+					type:'sampleDataMessage',
+					sampleDataMessage:SampleDataMessage.fromJSON(message)
+				});
+				break;
+		}
+	}
+	
+}
+eventEnable(HVPSUIAPI);
+NativeAPI.addEventListener('message', HVPSUIAPI._handleIncomingMessage);
+window.sendTestMessage = HVPSUIAPI.test;
+export default HVPSUIAPI;
