@@ -249,3 +249,9 @@ Code/C\#/FlybackModelling/Meshes/FlybackTransformer.skb
 /Documents/Rough
 /Kicad/VillardCascadingSubcircuitLowVoltage/PCB
 /Papers
+/Kicad/Libraries/KEMET_C1050_1uF_X7R
+**/fp-info-cache
+Code/Verilog/HVPSController2/serv_req_info.txt
+Code/Verilog/HVPSController2/simulation/questa/hvps_controller.sft
+Code/Verilog/HVPSController2/simulation/questa/hvps_controller.vo
+Code/Verilog/HVPSController2/output_file.map
