@@ -1,0 +1,12 @@
+L_leak = 0.000005;
+L_mag =  0.000044;
+R_p = 0.1;
+R_s = 3.5;
+n = 0.1176;
+C = 0.0000012;
+V_bus = 44.1;
+f_sw = 16000;
+i_p_threshold = 22;
+AD7822_Delay = 5.20833333e-7;
+V_out_threshold = 4000;
+V_first_threshold = 400;
