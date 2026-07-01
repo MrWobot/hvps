@@ -320,7 +320,7 @@ void Bluetooth::tryFlushSendQueue() {
 	//LOG_INFO("There are %zu entries in queue", _outgoingQueue.size());
     char* nextMsg = _outgoingQueue.front();
     size_t len = strlen(nextMsg);
-    esp_err_t ret = esp_spp_write(_connectionHandle, len, (uint8_t*)nextMsg);
+    esp_err_t ret = esp_spp_write(_connectionHandle, static_cast<int>(len), (uint8_t*)nextMsg);
     if (ret == ESP_OK) {
     } else {
 		_mutexWrite.lock();

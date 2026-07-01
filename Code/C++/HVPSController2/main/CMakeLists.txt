@@ -25,3 +25,17 @@ idf_component_register(
 	REQUIRES
 		Shared espcoredump
 )
+target_compile_options(${COMPONENT_LIB} PRIVATE 
+    -Wconversion 
+    -Wfloat-conversion 
+    -Wsign-conversion
+    -Wdouble-promotion
+    -Wnarrowing
+    -Werror=conversion
+    -Werror=float-conversion
+    -Werror=sign-conversion
+    -Werror=double-promotion
+    -Werror=narrowing
+	-Wnull-dereference
+	-Werror=null-dereference
+)

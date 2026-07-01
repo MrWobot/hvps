@@ -66,7 +66,10 @@ private:
     template<typename... Args>
     static void printColored(const char* colorCode, const char* fileName, int lineNumber, const char* format, Args... args) {
         printf("%s[%s] line %d: ", colorCode, fileName, lineNumber);
+		#pragma GCC diagnostic push
+		#pragma GCC diagnostic ignored "-Wdouble-promotion"
         printf(format, args...);
+		#pragma GCC diagnostic pop
         printf("\033[0m\n");
     }
 };

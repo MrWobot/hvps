@@ -333,7 +333,7 @@ void FPGAInterface::readOutputs(bool includingStaging, bool* temporaryFullOutput
 
 void FPGAInterface::sleep()
 {
-    Delay::usBlockingOtherTasks(_sleepUs);
+    Delay::usBlockingOtherTasks(static_cast<uint32_t>(_sleepUs > MAX_SLEEP?MAX_SLEEP:_sleepUs));
 }
 
 // ─── Private: Loop ────────────────────────────────────────────────────────────
@@ -356,7 +356,7 @@ void FPGAInterface::loop()
 	bool* temporaryFullOutputBuffer = new bool[_fullOutputBufferLength]();
     while (true)
     {
-		int64_t startTime = TimeHelper::ms();
+		uint64_t startTime = TimeHelper::ms();
 		if (_disposed.load()) {
 			_taskFinished = true;
 			return;
@@ -397,13 +397,15 @@ void FPGAInterface::loop()
     }
 }
 
-void FPGAInterface::doLoopSleep(int64_t& startTime)
+void FPGAInterface::doLoopSleep(uint64_t& startTime)
 {
-    int64_t now = TimeHelper::ms();
-    int64_t elapsed = now - startTime;
+    uint64_t now = TimeHelper::ms();
+    uint64_t elapsed = now - startTime;
     startTime = now;
-
-    int64_t toSleep = MINIMUM_UPDATE_PERIOD_MS - static_cast<int64_t>(elapsed);
+    uint64_t toSleep = MINIMUM_UPDATE_PERIOD_MS - elapsed;
+	if (toSleep > MAX_SLEEP) {
+		toSleep = MAX_SLEEP;
+	}
     if (toSleep > 0)
-        Delay::ms(toSleep);
+        Delay::ms(static_cast<uint32_t>(toSleep));
 }

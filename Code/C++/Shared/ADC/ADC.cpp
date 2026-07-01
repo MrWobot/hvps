@@ -188,17 +188,17 @@ uint16_t ADC::averagedRawSampleSelectedChannel(int nSamples)
             ++count;
         }
     }
-    return static_cast<uint16_t>(sum / nSamples);
+    return static_cast<uint16_t>(sum / static_cast<uint32_t>(nSamples));
 }
 
 
 // -------------------- Voltage helpers ------------------------------------
 float ADC::convertRawToVoltage(uint16_t raw)
 {
-    float mv = esp_adc_cal_raw_to_voltage(
+    float mv = static_cast<float>(esp_adc_cal_raw_to_voltage(
         raw,        // raw ADC reading
         _adc_chars  // pointer to previously characterized calibration data
-    );
+    ));
     return (mv * _correctionFactor) / 1000.0f; // convert mV to V
 }
 
@@ -328,8 +328,8 @@ void ADC::_monitorCurrentAndPower(
 ){
 	esp_err_t err;
 	float cumulativeEnergyUj = 0;
-	float cumulativeEnergyThresholdUj = handle->getCumulativeEnergyThresholdJ() * 1000.0;
-	uint64_t lastTimeUs = esp_timer_get_time();
+	float cumulativeEnergyThresholdUj = handle->getCumulativeEnergyThresholdJ() * 1000.0f;
+	uint64_t lastTimeUs = static_cast<uint64_t>(esp_timer_get_time());
 	uint64_t nextTimeUs;
 	uint64_t dTUs;
 	float currentA, powerW;
@@ -351,7 +351,7 @@ void ADC::_monitorCurrentAndPower(
 		if(len!=4){
 			continue;
 		}
-		nextTimeUs = esp_timer_get_time();
+		nextTimeUs = static_cast<uint64_t>(esp_timer_get_time());
 		dTUs = nextTimeUs - lastTimeUs;
 		if(dTUs<=0){
 			continue;
@@ -359,7 +359,7 @@ void ADC::_monitorCurrentAndPower(
 		currentA = convertRawToVoltage(d.type1.data & 0x0FFF) / handle->getSenseResistanceOhms();
 		handle->setCurrentA(currentA);
 		powerW = currentA * currentA * handle->getOutputCurrentLimitingResistanceOhms();
-		cumulativeEnergyUj += powerW * dTUs;
+		cumulativeEnergyUj += powerW * static_cast<float>(dTUs);
 		cumulativeEnergyUj -= static_cast<float>(dTUs) * handle->getEnergyDisipatedUjPerUs();
 		if(cumulativeEnergyUj<0){
 			cumulativeEnergyUj =0;
@@ -436,7 +436,7 @@ void ADC::measureNReadsPerSecond() {
 		// drain backlog
 		int nCycles = 0;
 		
-		uint64_t startTime = esp_timer_get_time();
+		uint64_t startTime = static_cast<uint64_t>(esp_timer_get_time());
 		while (nCycles<10000) {
 			esp_err_t err = adc_continuous_read(
 				_adc_hdl,                              // handle
@@ -453,7 +453,7 @@ void ADC::measureNReadsPerSecond() {
 			}
 			nCycles++;
 		}
-		uint64_t delay  = esp_timer_get_time() - startTime;
+		uint64_t delay  = static_cast<uint64_t>(esp_timer_get_time()) - startTime;
 		uint64_t readsPerSecond = (10000ULL*1000000ULL)/delay;
 		LOG_INFO("Achieving %"PRIu64 " reads per second", readsPerSecond);
 	}

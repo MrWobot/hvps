@@ -101,7 +101,7 @@ bool ADCOneShot::getRawQuickly(uint16_t& value) {
 }
 
 float ADCOneShot::convertRawToVoltage(uint16_t raw) {
-    float mv = esp_adc_cal_raw_to_voltage(raw, _adc_chars);
+    float mv = static_cast<float>(esp_adc_cal_raw_to_voltage(raw, _adc_chars));
     return (mv * _correctionFactor) / 1000.0f;
 }
 

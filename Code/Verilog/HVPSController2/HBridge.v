@@ -11,7 +11,8 @@ module HBridge(
     output wire U23_SD,
     output wire U24_HIN,
     output wire U24_LIN,
-    output wire U24_SD
+    output wire U24_SD,
+	 output reg driving
 );
 
 // 50MHz / 16kHz = 3125 counts per full cycle
@@ -67,7 +68,7 @@ always @(posedge clk) begin
 					if(started_finite_cycles) begin
 						if(n_quarter_cycles_driven< n_quarter_cycles_to_drive) begin
 							n_quarter_cycles_driven <= n_quarter_cycles_driven + 4'd1;
-							drive_ended_for_quarter <= ~can_drive;
+							drive_ended_for_quarter <= !can_drive;
 							doing_sample <=1'b1;
 						end
 						else begin
@@ -95,6 +96,7 @@ always @(posedge clk) begin
 				drive_ended_for_quarter <= 1;
 		  end
     end
+	 driving <= 1'b0;
     case (quarter)
         0: begin
 					// On quarter cycle - drive if permitted
@@ -106,6 +108,7 @@ always @(posedge clk) begin
 					) begin
 						  hLeft <= 1;
 						  lRight <= 1;
+						  driving <= 1'b1;
 					end
 				end
 			end
@@ -122,6 +125,7 @@ always @(posedge clk) begin
 						&&(counter < QUARTER_CYCLE - DEAD_TIME)) begin
 					  hRight <= 1;
 					  lLeft <= 1;
+					  driving <= 1'b1;
 					end
 				end
 			end

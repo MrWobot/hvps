@@ -77,6 +77,11 @@ module hvps_controller(
 	 wire next_data_ready;
 	 wire can_drive;//The sacred signal from the bangbang controller that goes into the H-Bridge.
 	 assign OT5 = can_drive;
+	 wire h_bridge_on;
+	 wire new_primary_current;
+	 wire new_first_stage_voltage;
+	 wire new_output_voltage;
+	 wire [5:0] new_primary_current_lag;
 	 
     // Instantiate the module
     HVPS_FPGAInterface fpga_interface (
@@ -114,7 +119,9 @@ module hvps_controller(
 		 .INV_CONVST(U12_INV_CONVST),
 		 .INV_EOC(U12_INV_EOC),
 		 .INV_RD(U12_INV_RD),
-		 .data(primary_current_raw)
+		 .data(primary_current_raw),
+		 .new_value(new_primary_current),
+		 .adc_lag(new_primary_current_lag)
 	  );
 	 AD7822 output_voltage_feedback_adc(
 		 .clk_50MHz(clk),
@@ -129,7 +136,8 @@ module hvps_controller(
 		 .INV_CONVST(U5_INV_CONVST),
 		 .INV_EOC(U5_INV_EOC),
 		 .INV_RD(U5_INV_RD),
-		 .data(output_voltage_raw)
+		 .data(output_voltage_raw),
+		 .new_value(new_output_voltage)
 	  );
 	 AD7822 first_stage_voltage_feedback_adc(
 		 .clk_50MHz(clk),
@@ -144,9 +152,11 @@ module hvps_controller(
 		 .INV_CONVST(U20_INV_CONVST),
 		 .INV_EOC(U20_INV_EOC),
 		 .INV_RD(U20_INV_RD),
-		 .data(first_stage_voltage_raw)
+		 .data(first_stage_voltage_raw),
+		 .new_value(new_first_stage_voltage)
 	  );
 	  BangBangController bang_bang_controller(
+		 .clk(clk),
 		 .primary_current_raw(primary_current_raw),
 		 .first_stage_voltage_raw(first_stage_voltage_raw),
 		 .output_voltage_raw(output_voltage_raw),
@@ -187,7 +197,8 @@ module hvps_controller(
 		 .U23_SD(U23_SD),
 		 .U24_HIN(U24_HIN),
 		 .U24_LIN(U24_LIN),
-		 .U24_SD(U24_SD)
+		 .U24_SD(U24_SD),
+		 .driving(h_bridge_on)
 	  );
 	  
 endmodule

@@ -52,19 +52,19 @@ size_t SoftwareUART::writeBytes(const char* src, size_t len) {
 
         // Start bit (LOW)
         gpio_set_level(_txGPIONum, _invertTx ? 1 : 0);
-        ets_delay_us(_bitPeriodUs);
+        ets_delay_us(static_cast<uint32_t>(_bitPeriodUs));
 
         // Data bits (LSB first)
         for (int bit = 0; bit < 8; bit++) {
             int bitval = (b >> bit) & 1;
             bitval ^= _invertTx;  // invert if needed
             gpio_set_level(_txGPIONum, bitval);
-            ets_delay_us(_bitPeriodUs);
+            ets_delay_us(static_cast<uint32_t>(_bitPeriodUs));
         }
 
         // Stop bit (HIGH)
         gpio_set_level(_txGPIONum, _invertTx ? 0 : 1);
-        ets_delay_us(_bitPeriodUs);
+        ets_delay_us(static_cast<uint32_t>(_bitPeriodUs));
     }
 
     return len;
@@ -73,7 +73,7 @@ size_t SoftwareUART::readBytes(char* dst, size_t maxlen, uint32_t timeoutMs)
 {
     if (maxlen == 0) return 0;
 
-    uint64_t deadlineUs = esp_timer_get_time() + (uint64_t)timeoutMs * 1000ULL;
+    uint64_t deadlineUs = static_cast<uint64_t>(esp_timer_get_time()) + (uint64_t)timeoutMs * 1000ULL;
     size_t totalRead = 0;
 
     while (totalRead < maxlen)
@@ -111,7 +111,7 @@ void SoftwareUART::readLooper()
 
             if (level == 0) {
                 // Detected falling edge: START BIT
-                tStart = esp_timer_get_time();
+                tStart = static_cast<uint64_t>(esp_timer_get_time());
                 break;
             }
 
@@ -121,7 +121,7 @@ void SoftwareUART::readLooper()
 
         // ----- 2) SAMPLE THE BYTE -----
         // First data bit center: tStart + 1.5 * bitPeriod
-        uint64_t sampleTime = tStart + _bitPeriodUs + (_bitPeriodUs / 2);
+        uint64_t sampleTime = tStart + static_cast<uint64_t>(_bitPeriodUs + (_bitPeriodUs / 2));
 
         uint8_t byte = 0;
 
@@ -133,9 +133,9 @@ void SoftwareUART::readLooper()
             }
 
             int bitVal = gpio_get_level(_rxGPIONum) ^ _invertRx;
-            byte |= (bitVal << bit);
+            byte |= static_cast<uint8_t>(bitVal << bit);
 
-            sampleTime += _bitPeriodUs; // next bit
+            sampleTime += static_cast<uint64_t>(_bitPeriodUs); // next bit
         }
 
         // ----- 3) STOP BIT CHECK (optional) -----

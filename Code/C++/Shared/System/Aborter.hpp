@@ -31,7 +31,10 @@ public:
 			_toSafe();
 		}	
 		char message[256];
+		#pragma GCC diagnostic push
+		#pragma GCC diagnostic ignored "-Wdouble-promotion"
 		std::snprintf(message, sizeof(message), msg, std::forward<Args>(args)...);
+		#pragma GCC diagnostic pop
 		_safeAbort(fileName, lineNumber, message);
 	}
 	

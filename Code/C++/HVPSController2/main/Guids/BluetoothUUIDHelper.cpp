@@ -22,8 +22,8 @@ std::array<uint8_t, 16> BluetoothUUIDHelper::parseBluetoothUUID(
     std::array<uint8_t, 16> uuid_array = {};
 
     // Parse the first segment (8 characters)
-    int charIndex = 0;
-    int i = 0;
+    size_t charIndex = 0;
+    size_t i = 0;
     while (i < 4) {
         uuid_array[i++] = parseTwoCharactersToByte(uuid_str[charIndex], uuid_str[charIndex+1]);
         charIndex+=2;

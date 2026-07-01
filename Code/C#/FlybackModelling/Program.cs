@@ -10,16 +10,18 @@ using Core.Maths.Tensors;
 using Core.Pool;
 using FiniteElementAnalysis.Boundaries;
 using FiniteElementAnalysis.Fields;
-using FiniteElementAnalysis.Mesh.Generation;
 using FiniteElementAnalysis.Mesh.Tetrahedral;
 using FiniteElementAnalysis.Mesh;
 using FiniteElementAnalysis.Ply;
-using FiniteElementAnalysis.Polyhedrals;
 using FiniteElementAnalysis.Results.Composites;
 using FiniteElementAnalysis.Results;
 using FiniteElementAnalysis.Solvers;
 using FiniteElementAnalysis.SourceRegions;
 using System.Reflection;
+using FiniteElementAnalysis.Results.Bases;
+using FiniteElementAnalysis.Mesh.Polyhedral;
+using FiniteElementAnalysis.Mesh.Parsing.Tetrahedral;
+using FiniteElementAnalysis.Mesh.Refinement.Tetrahedral.Tetgen;
 namespace FlybackModelling
 {
     public class Program
@@ -189,7 +191,7 @@ namespace FlybackModelling
 
 
 
-                StaticMagneticConductionSolver magneticSolver = new StaticMagneticConductionSolver();
+                var magneticSolver = new StaticMagneticConductionSolver3D();
 
                 TetrahedralMesh magneticFieldMesh = mesh.ToOperationSpecificMesh(OPERATION_MAGNETIC_FIELD);
                 StaticMagneticConductionResult magneticFieldSolverResult = magneticSolver.Solve(magneticFieldMesh,
@@ -204,18 +206,18 @@ namespace FlybackModelling
                 );
 
                 Dictionary<int, double> mapNodeToPermeability = new Dictionary<int, double>();
-                foreach (TetrahedronElement element in magneticFieldMesh.Elements)
+                foreach (TetrahedralElement element in magneticFieldMesh.TetrahedralElements)
                 {
-                    double permeability = ((StaticMagneticConductionVolume)element.VolumeIsAPartOf).Permeability;
-                    foreach (Node node in element.Nodes)
+                    double permeability = ((StaticMagneticConductionVolume)element.VolumeBelongsTo).Permeability;
+                    foreach (TetrahedralNode node in element.Nodes)
                     {
                         mapNodeToPermeability[node.Identifier] = permeability;
                     }
                 }
-                double[] nodePermeabilities = new double[mesh.Nodes.Length];
+                double[] nodePermeabilities = new double[mesh.Nodes.Count];
                 foreach (var kvp in mapNodeToPermeability)
                 {
-                    int nodeIndex = magneticFieldMesh.MapNodeIdentifierToGlobalIndex[kvp.Key];
+                    int nodeIndex = magneticFieldMesh.GetGlobalIndexForNode(kvp.Key);
                     nodePermeabilities[nodeIndex] = kvp.Value;
                 }
 
@@ -457,7 +459,7 @@ namespace FlybackModelling
             FileCachedItems fileCachedItems,
             bool useCachedSolverResults)
         {
-            PolyhedralDomain domain = ObjFileToPoly.Read(modelObjFileBytes, volumes, boundaries,
+            PolyhedralDomain domain = PolyhedralDomainFromObjHelper.Read(modelObjFileBytes, volumes, boundaries,
                 out Dictionary<int, Boundary> mapMarkerToBoundary, Units.Millimeters,
                 0.0001d);
             domain.CheckForNodesTooCloseTogether();
@@ -474,7 +476,7 @@ namespace FlybackModelling
             DirectoryHelper.DeleteRecursively(directoryPath, false);
             Directory.CreateDirectory(directoryPath);
             string polyFilePath = Path.Combine(directoryPath, "mesh.poly");
-            PolyFileGenerator.Generate(polyFilePath, domain);
+            PolyFileFromPolyhedralDomainHelper.Generate(polyFilePath, domain);
             Tetgen.CopyTetViewToDirectory(directoryPath);
             using (Tetgen tetgen = new Tetgen())
             {

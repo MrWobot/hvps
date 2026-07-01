@@ -23,4 +23,5 @@ private:
 		HVPS_FPGAInterface& fpgaInterface
 	)noexcept;
 	void clampDesiredOutputVoltage(float& value);
+	uint8_t clampAndConvertToRaw(float value);
 };

@@ -19,19 +19,32 @@ ThresholdController::ThresholdController(
 	if(!Flash::getFloat(FLASH_NAMESPACE, DESIRED_OUTPUT_VOLTAGE, currentValue)){
 		currentValue = _hvpsConfiguration1.defaultOutputVoltageVolts;
 	}
-	clampDesiredOutputVoltage(currentValue);
 	_desiredOutputVoltage = currentValue;
-	_fpgaInterface.setDesiredOutputVoltage(currentValue);
+	_fpgaInterface.setDesiredOutputVoltage(clampAndConvertToRaw(currentValue));
 }
 void ThresholdController::setDesiredOutputVoltage(float value){
-	clampDesiredOutputVoltage(value);
-	_fpgaInterface.setDesiredOutputVoltage(value);
+	_fpgaInterface.setDesiredOutputVoltage(clampAndConvertToRaw(value));
 	Flash::setFloat(FLASH_NAMESPACE, DESIRED_OUTPUT_VOLTAGE, value);
 	_desiredOutputVoltage = value;
 }
+uint8_t ThresholdController::clampAndConvertToRaw(float value){
+	clampDesiredOutputVoltage(value);
+	float rawDesiredOutputVoltage = value/_hvpsConfiguration1.outputVoltageFromRaw;
+	if(rawDesiredOutputVoltage>255.0f){
+		rawDesiredOutputVoltage = 255.0f;
+	}
+	else if(rawDesiredOutputVoltage<0.0f){
+		rawDesiredOutputVoltage = 0.0f;
+	}
+	return static_cast<uint8_t>(rawDesiredOutputVoltage);
+}
 void ThresholdController::clampDesiredOutputVoltage(float& value){
-	if((value>_hvpsConfiguration1.maxOutputVoltageThresholdVolts)||(value>_hvpsConfiguration2.maxOutputVoltageThresholdVolts)){
-		value = _hvpsConfiguration1.maxOutputVoltageThresholdVolts;
+	if((value>_hvpsConfiguration1.maxOutputVoltageVolts)||(value>_hvpsConfiguration2.maxOutputVoltageVolts)){
+		value = _hvpsConfiguration1.maxOutputVoltageVolts;
+	}
+	else if((value>_hvpsConfiguration1.minOutputVoltageVolts)||(value>_hvpsConfiguration2.minOutputVoltageVolts))
+	{
+		value = _hvpsConfiguration1.minOutputVoltageVolts;
 	}
 }
 /*

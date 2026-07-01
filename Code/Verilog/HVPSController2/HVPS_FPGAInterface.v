@@ -13,7 +13,7 @@ module HVPS_FPGAInterface (
     input wire [1023:0] buffered_data,
     input wire [7:0] echo_desired_output_voltage,
     input wire [7:0] max_primary_current,
-    input wire [7:0] max_output_voltage,
+    input wire [7:0] max_output_voltage_volts,
     input wire [7:0] max_first_stage_voltage,
     input wire [7:0] state,
     input wire [7:0] actual_peak_primary_current,
@@ -97,7 +97,7 @@ module HVPS_FPGAInterface (
 
         // Output buffer - rising edge of to_output or out_shift
         if (to_output_debounced && !to_output_prev) begin
-            output_buffer <= {done_command, actual_first_stage_voltage, actual_output_voltage, actual_peak_primary_current, state, max_first_stage_voltage, max_output_voltage, max_primary_current, echo_desired_output_voltage, buffered_data, input_staged};
+            output_buffer <= {done_command, actual_first_stage_voltage, actual_output_voltage, actual_peak_primary_current, state, max_first_stage_voltage, max_output_voltage_volts, max_primary_current, echo_desired_output_voltage, buffered_data, input_staged};
         end else if (out_shift_debounced && !out_shift_prev) begin
             output_buffer <= {output_buffer[1103:0], 1'b0};
         end

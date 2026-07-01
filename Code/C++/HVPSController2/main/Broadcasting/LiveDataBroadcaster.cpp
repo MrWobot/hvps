@@ -41,7 +41,7 @@ void LiveDataBroadcaster::stop(){
 }
 void LiveDataBroadcaster::_run(){
 	ValueBoundType frequencyHzValueBoundType;
-	uint64_t frequencyHz = _highSpeedCore.getFrequencyHz(frequencyHzValueBoundType);
+	float frequencyHz = _highSpeedCore.getFrequencyHz(frequencyHzValueBoundType);
 	float outputVoltage = _highSpeedCore.getActualOutputVoltage();
 	float firstStageVoltage = _highSpeedCore.getActualFirstStageVoltage();
 	ValueBoundType peakPrimaryCurrentValueBoundType;

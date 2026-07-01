@@ -310,7 +310,7 @@ void HighSpeedCore::doShutDown(){
 	setActualSystemState(SystemState::ShuttingDown);
 	uint64_t lastTime = 0;
 	SystemState desiredSystemState = getDesiredSystemState();
-	uint64_t timeAtWhichClassifiedSafeSeconds_1 = 0, 
+	float timeAtWhichClassifiedSafeSeconds_1 = 0, 
 		timeAtWhichClassifiedSafeSeconds_2 = 0;
 	setActualSystemState(SystemState::ShuttingDown);
 	bool issuedWarning = false;
@@ -331,8 +331,8 @@ void HighSpeedCore::doShutDown(){
 		float outputVoltage = getActualOutputVoltage();
 		lastTime = fpgaUpdateTime;
 		if(outputVoltage>SAFE_OUTPUT_VOLTAGE){
-			timeAtWhichClassifiedSafeSeconds_1=0;
-			timeAtWhichClassifiedSafeSeconds_2=0;
+			timeAtWhichClassifiedSafeSeconds_1=0.0f;
+			timeAtWhichClassifiedSafeSeconds_2=0.0f;
 			continue;
 		}
 		if(_hvpsConfiguration1.outputVoltageFromRaw*2.0f<=SAFE_OUTPUT_VOLTAGE
@@ -341,8 +341,8 @@ void HighSpeedCore::doShutDown(){
 			continue;
 		}
 		if(
-			(timeAtWhichClassifiedSafeSeconds_1==0
-			||timeAtWhichClassifiedSafeSeconds_2==0)
+			(timeAtWhichClassifiedSafeSeconds_1==0.0f
+			||timeAtWhichClassifiedSafeSeconds_2==0.0f)
 			)
 		{				
 			float additionalTimeRequiredToDischargeSeconds_1;	
@@ -363,15 +363,15 @@ void HighSpeedCore::doShutDown(){
 		}
 		if(
 			(
-				(timeAtWhichClassifiedSafeSeconds_1>0)
+				(timeAtWhichClassifiedSafeSeconds_1>0.0f)
 				&&
-				(timeAtWhichClassifiedSafeSeconds_1<=TimeHelper::s())
+				(timeAtWhichClassifiedSafeSeconds_1<=static_cast<float>(TimeHelper::s()))
 			)
 			&&
 			(
 				(timeAtWhichClassifiedSafeSeconds_2>0)
 				&&
-				(timeAtWhichClassifiedSafeSeconds_2<=TimeHelper::s())
+				(timeAtWhichClassifiedSafeSeconds_2<=static_cast<float>(TimeHelper::s()))
 			)){
 			setActualSystemState(SystemState::ShutDown);
 			if(!issuedWarning){

@@ -54,7 +54,7 @@ void LEDStrip::refresh(){
 	for(int i=0; i<_length; i++){
 		uint32_t pixel = _pixels[i];
 		PixelHelper::uInt32ToRGB(pixel, r, g, b);
-		led_strip_set_pixel(_strip, i, r, g, b);
+		led_strip_set_pixel(_strip, static_cast<uint32_t>(i), r, g, b);
 	}
 	led_strip_refresh(_strip);
 }

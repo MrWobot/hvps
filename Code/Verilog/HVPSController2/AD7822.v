@@ -12,7 +12,9 @@ module AD7822(
     input wire INV_EOC,
     output reg INV_RD,
     output reg [7:0] data,
-    output reg [7:0] data2
+    output reg [7:0] data2,
+	 output reg new_value,
+	 output reg [5:0] adc_lag
 );
 
 // At 50MHz, 1 clock = 20ns
@@ -27,6 +29,7 @@ localparam RD_HOLD     = 2'd3;
 
 reg [1:0] state;
 reg [4:0] counter;
+reg [5:0] lag_counter;
 
 initial begin
     INV_CONVST = 0;
@@ -36,39 +39,45 @@ initial begin
 end
 
 always @(posedge clk_50MHz) begin
+	 new_value <=0;
     case (state)
         IDLE: begin
             INV_CONVST <= 0; // falling edge starts conversion
             INV_RD     <= 1;
             counter    <= 0;
             state      <= CONVERTING;
+            lag_counter <= 0;  // reset lag counter on new conversion start
         end
 
         CONVERTING: begin
-			 INV_CONVST <= 1;
-			 if (!INV_EOC) begin
-				  INV_RD  <= 0;
-				  counter <= 0;
-				  state   <= READING;
-			 end else if (counter >= 5'd30) begin // 30 clocks = 600ns timeout
-				  // EOC never came, retry
-				  counter <= 0;
-				  state   <= IDLE; // go back and try again
-			 end else begin
-				  counter <= counter + 5'd1;
-			 end
-		end
+				 INV_CONVST <= 1;
+            lag_counter <= lag_counter + 1;
+				 if (!INV_EOC) begin
+					  INV_RD  <= 0;
+					  counter <= 0;
+					  state   <= READING;
+				 end else if (counter >= 5'd30) begin // 30 clocks = 600ns timeout
+					  // EOC never came, retry
+					  counter <= 0;
+					  state   <= IDLE; // go back and try again
+				 end else begin
+					  counter <= counter + 5'd1;
+				 end
+			end
 
         READING: begin
             if (counter >= 1) begin // wait 2 clocks = 40ns > 20ns access time
 			//at moment this is 60ns can do counter>=1 for 40ns probably.
                 data <= {DB7,DB6,DB5,DB4,DB3,DB2,DB1,DB0};//{DB7,DB6,DB5,DB4,DB3,DB2,DB1,DB0};
                 data2 <= {DB7,DB6,DB5,DB4,DB3,DB2,DB1,DB0};//{DB7,DB6,DB5,DB4,DB3,DB2,DB1,DB0};
+					 new_value <=1;
+					 adc_lag<=lag_counter + 1;
                 INV_RD <= 1;
                 counter <= 0;
                 state   <= RD_HOLD;
             end else begin
                 counter <= counter + 5'd1;
+					 lag_counter <= lag_counter + 1;
             end
         end
 

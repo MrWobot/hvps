@@ -6,6 +6,7 @@ using BaseMessages.Constants;
 using Core.FileSystem;
 using DataMemberNamesClassBuilder;
 using FPGAInterfaceGenerator;
+using HVPSConstants;
 using SharedMasterSlaveUARTMessages;
 using SharedMasterSlaveUARTMessages.DataMemberNames.Messages;
 namespace HVPSCodeGenerator
@@ -82,7 +83,7 @@ namespace HVPSCodeGenerator
             Output actualFirstStageVoltage = new Output("ActualFirstStageVoltage", VariableType.Byte);
             Output actualOutputVoltage = new Output("ActualOutputVoltage", VariableType.Byte);
             Output actualPeakPrimaryCurrent = new Output("ActualPeakPrimaryCurrent", VariableType.Byte);
-
+            Constants4K constants = new Constants4K();
             FPGAInterfaceSetup fpgaInterfaceSetup = new FPGAInterfaceSetup(
                 "HVPS_FPGAInterface",
                 new IOVariable[] {
@@ -95,10 +96,10 @@ namespace HVPSCodeGenerator
                     actualPeakPrimaryCurrent,
                     new Output("State", VariableType.Byte),
                     new Output("MaxFirstStageVoltage", VariableType.Byte),
-                    new Output("MaxOutputVoltage", VariableType.Byte),
+                    new Output("MaxOutputVoltageVolts", VariableType.Byte),
                     new Output("MaxPrimaryCurrent", VariableType.Byte),
                     new Output("EchoDesiredOutputVoltage", VariableType.Byte),
-                    new Output("BufferedData", VariableType.CustomLengthBytes, HVPSConstants.Constants.FpgaInterfaceBufferedDataLength),
+                    new Output("BufferedData", VariableType.CustomLengthBytes, constants.FpgaInterfaceBufferedDataLength),
                 },
                 new GetMultipleVariableCPlusPlusMethod[] {
                     new GetMultipleVariableCPlusPlusMethod(

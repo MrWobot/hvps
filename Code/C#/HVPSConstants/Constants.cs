@@ -5,54 +5,108 @@ namespace HVPSConstants
 {
     public class Constants
     {
-        public const double SafetyFactor = 1.2;
-        public const double ADCRawToUnscaledVoltage = 2d / 255d;
-        public const int Frequency = 16000;
-        public const int BroadcastFrequency = 2;
-        public const double DutyCycle = 0.5;
-        public const double PrimaryCurrentFeedbackCurrentTransformerRatioSecondaryToPrimary = 200d;
-        public const double PrimaryCurrentFeedbackBurdenResistorResistanceOhms = 10;
-        public const double VillardCapacitorVoltageRating = 20000;
-        public const double VillardCapacitorDeratedMaximumVoltage = 15000;
-        public const double VillardCapacitorCapacitance = 1e-9;
-        public const double VillardCapacitorTolerancePercent = 10;
-        public const double VillardCapacitorBleedResistance = 5e9*3;
-        public const double VillardCapacitorBleedResistorTolerancePercent = 10;
-        public const int NStages = 6;
-        public const double VillardDiodeVoltageRating = 35000;
-        public const double VillardDiodeCurrentRating = 0.1;
-        public const double MaximumVillardDiodeForwardVoltageDrop = 52;
-        public const double FlybackTransformerMeasuredPrimaryInductances = 4.9e-5;
-        public const double FlybackTransformerMaximumCurrent = 20;
-        public const double MaximumDesiredOutputVoltage = 80000;
-        public const double MinimumDesiredOutputVoltage = 60000;
-        public const double NSeriesOutputCurrentLimitingResistors = 5;
-        public const double IndividualOutputCurrentLimitingResistorResistance = 200000;
-        public const double MaximumCompositeOutputCurrentLimitingResistorAveragePower = 12.5;
-        public const double PowerSupplyVoltageFeedbackPotentialDividerRatio = 16.5;
-        public const double FirstStageVoltageFeedbackPotentialDividerRatio = 8400;
-        public const double OutputVoltageFeedbackPotentialDividerRatio = 3.08e4;
-        //public const double OutputResistorMaximumEnergy = ;
-        public const double OutputCurrentLimitingResistorMaxPowerDisipation = 15;
-        public const float MaxTemperatureMosfet = 50;
-        public const float MaxTemperatureLowerSnubberDiode = 50;
-        public const int PingTimeoutMilliseconds = 10000;
-        public const int SendPingIntervalMilliseconds = 2000;
-        public static readonly RGB IdleColour = new RGB("#24aee0");
-        public const double IdleFlashHz = 2;
-        public static readonly RGB LiveColour = new RGB("#ff0000");
-        public const double LiveFlashHz = 2;
-        public static readonly RGB RunningSystemChecksColour = new RGB("#FF1500");
-        public const double RunningSystemChecksFlashHz = 1;
-        public static readonly RGB ShuttingDownColour = new RGB("#8B4000");
-        public const double ShuttingDownFlashHz = 1;
-        public static readonly RGB ShutDownColour = new RGB("#00ff00");
-        public const double ShutDownFlashHz = 0;
-        public static readonly RGB ErrorColour = new RGB("#f7075f");
-        public const double ErrorFlashHz = 1;
-        public static readonly RGB UnknownColour = new RGB("#ffffff");
-        public const double UnknownFlashHz = 1;
-        public const int FpgaInterfaceBufferedDataLength = 128;
-        public const int FpgaCaptureBuffersLengthBytes = 768;
+        public float FirstStageVoltageFromRaw { get; }
+        public float OutputVoltageFromRaw { get; }
+        public float MaxOutputVoltageVolts { get; }
+        public float MinOutputVoltageVolts { get; }
+        public float PowerSupplyVoltageFeedbackPotentialDividerRatio { get; }
+        public float PrimaryCurrentFromRaw { get; }
+        public float MaxTemperatureMosfetDegreesC { get; }
+        public uint VillardCapacitorsBleedTimeConstantSeconds { get; }
+        public float MaxFirstStageVoltage { get; }
+        public float MaxADCConversionTime { get; }
+        public float MaxSupplyVoltage { get; }
+        public float MaxPrimaryCurrent { get; }
+        public float TransformerLeakageInductance { get; }
+        public uint PingTimeoutMilliseconds { get; }
+        public uint SendPingIntervalMilliseconds { get; }
+        public int FpgaInterfaceBufferedDataLength { get; }
+        public int FpgaCaptureBuffersLengthBytes { get; }
+        public RGB IdleColour { get; }
+        public RGB LiveColour { get; }
+        public RGB RunningSystemChecksColour { get; }
+        public RGB ShuttingDownColour { get; }
+        public RGB ShutDownColour { get; }
+        public RGB ErrorColour { get; }
+        public RGB UnknownColour { get; }
+        public double IdleFlashHz { get; }
+        public double LiveFlashHz { get; }
+        public double RunningSystemChecksFlashHz { get; }
+        public double ShuttingDownFlashHz { get; }
+        public double ShutDownFlashHz { get; }
+        public double ErrorFlashHz { get; }
+        public double UnknownFlashHz { get; }
+        protected Constants(
+            float firstStageVoltageFromRaw,
+            float outputVoltageFromRaw,
+            float maxOutputVoltageVolts,
+            float minOutputVoltageVolts,
+            float powerSupplyVoltageFeedbackPotentialDividerRatio,
+            float primaryCurrentFromRaw,
+            float maxTemperatureMosfetDegreesC,
+            UInt32 villardCapacitorsBleedTimeConstantSeconds,
+            float maxFirstStageVoltage,
+            float maxSupplyVoltage,
+            float maxPrimaryCurrent,
+            float transformerLeakageInductance,
+            UInt32 pingTimeoutMilliseconds = 10000,
+            UInt32 sendPingIntervalMilliseconds = 2000,
+            int fpgaInterfaceBufferedDataLength = 128,
+            int fpgaCaptureBuffersLengthBytes = 768,
+            float maxADCConversionTime = 33f / 50000000f,
+            RGB? idleColour = null,
+            RGB? liveColour = null,
+            RGB? runningSystemChecksColour = null,
+            RGB? shuttingDownColour = null,
+            RGB? shutDownColour = null,
+            RGB? errorColour = null,
+            RGB? unknownColour = null,
+            float idleFlashHz = 2,
+            float liveFlashHz = 2,
+            float runningSystemChecksFlashHz = 1,
+            float shuttingDownFlashHz = 1,
+            float shutDownFlashHz = 0,
+            float errorFlashHz = 1,
+            float unknownFlashHz = 1)
+        {
+            // Raw and voltage conversions
+            FirstStageVoltageFromRaw = firstStageVoltageFromRaw;
+            OutputVoltageFromRaw = outputVoltageFromRaw;
+            MaxOutputVoltageVolts = maxOutputVoltageVolts;
+            MinOutputVoltageVolts = minOutputVoltageVolts;
+            PowerSupplyVoltageFeedbackPotentialDividerRatio = powerSupplyVoltageFeedbackPotentialDividerRatio;
+            PrimaryCurrentFromRaw = primaryCurrentFromRaw;
+            MaxTemperatureMosfetDegreesC = maxTemperatureMosfetDegreesC;
+            VillardCapacitorsBleedTimeConstantSeconds = villardCapacitorsBleedTimeConstantSeconds;
+            MaxFirstStageVoltage = maxFirstStageVoltage;
+            MaxADCConversionTime = maxADCConversionTime;
+            MaxSupplyVoltage = maxSupplyVoltage;
+            MaxPrimaryCurrent = maxPrimaryCurrent;
+            TransformerLeakageInductance = transformerLeakageInductance;
+
+            // Network and FPGA sizing
+            PingTimeoutMilliseconds = pingTimeoutMilliseconds;
+            SendPingIntervalMilliseconds = sendPingIntervalMilliseconds;
+            FpgaInterfaceBufferedDataLength = fpgaInterfaceBufferedDataLength;
+            FpgaCaptureBuffersLengthBytes = fpgaCaptureBuffersLengthBytes;
+
+            // LED Colours
+            IdleColour = idleColour ?? new RGB("#24aee0");
+            LiveColour = liveColour ?? new RGB("#ff0000");
+            RunningSystemChecksColour = runningSystemChecksColour ?? new RGB("#FF1500");
+            ShuttingDownColour = shuttingDownColour ?? new RGB("#8B4000");
+            ShutDownColour = shutDownColour ?? new RGB("#00ff00");
+            ErrorColour = errorColour ?? new RGB("#f7075f");
+            UnknownColour = unknownColour ?? new RGB("#ffffff");
+
+            // LED Flash Rates
+            IdleFlashHz = idleFlashHz;
+            LiveFlashHz = liveFlashHz;
+            RunningSystemChecksFlashHz = runningSystemChecksFlashHz;
+            ShuttingDownFlashHz = shuttingDownFlashHz;
+            ShutDownFlashHz = shutDownFlashHz;
+            ErrorFlashHz = errorFlashHz;
+            UnknownFlashHz = unknownFlashHz;
+        }
     }
 }

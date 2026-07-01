@@ -15,10 +15,6 @@ idf_component_register(
 	"Communication/Events/ChannelEvents.cpp"
 	"Communication/I2C/I2C.cpp"
 	"Communication/I2C/I2CConfiguration.cpp"
-	"Communication/RMT/HardwareRMT.cpp"
-	"Communication/RMT/RMTDuplexChannel.cpp"
-	"Communication/MRT/MRTChannel.cpp"
-	"Communication/MRT/MRTDuplexChannel.cpp"
 	"Communication/DuplexChannel.cpp"
 	"Components/TemperatureSensors/LM75A.cpp"
 	"Components/TemperatureSensors/DHT22.cpp"
@@ -109,4 +105,18 @@ idf_component_register(
 		espcoredump
     INCLUDE_DIRS
         "."       # lets you #include "Core/Event.hpp" or "Utils/Foo.hpp"
+)
+target_compile_options(${COMPONENT_LIB} PRIVATE 
+    -Wconversion 
+    -Wfloat-conversion 
+    -Wsign-conversion
+    -Wdouble-promotion
+    -Wnarrowing
+    -Werror=conversion
+    -Werror=float-conversion
+    -Werror=sign-conversion
+    -Werror=double-promotion
+    -Werror=narrowing
+	-Wnull-dereference
+	-Werror=null-dereference
 )
