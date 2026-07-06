@@ -42,6 +42,7 @@ namespace HVPSConstants
         public RGB ShutDownColour { get; }
         public RGB ErrorColour { get; }
         public RGB UnknownColour { get; }
+        public RGB RunningNCyclesColour { get; }
         public double IdleFlashHz { get; }
         public double LiveFlashHz { get; }
         public double RunningSystemChecksFlashHz { get; }
@@ -49,6 +50,7 @@ namespace HVPSConstants
         public double ShutDownFlashHz { get; }
         public double ErrorFlashHz { get; }
         public double UnknownFlashHz { get; }
+        public double RunningNCyclesFlashHz { get; }
         protected Constants(
             float firstStageVoltageFromRaw,
             float outputVoltageFromRaw,
@@ -72,13 +74,15 @@ namespace HVPSConstants
             RGB? shutDownColour = null,
             RGB? errorColour = null,
             RGB? unknownColour = null,
+            RGB? runningNCyclesColour = null,
             float idleFlashHz = 2,
             float liveFlashHz = 2,
             float runningSystemChecksFlashHz = 1,
             float shuttingDownFlashHz = 1,
             float shutDownFlashHz = 0,
             float errorFlashHz = 1,
-            float unknownFlashHz = 1)
+            float unknownFlashHz = 1,
+            float runningNCyclesFlashHz = 1)
         {
             // Raw and voltage conversions
             FirstStageVoltageFromRaw = firstStageVoltageFromRaw;
@@ -106,6 +110,7 @@ namespace HVPSConstants
             ShutDownColour = shutDownColour ?? new RGB("#00ff00");
             ErrorColour = errorColour ?? new RGB("#f7075f");
             UnknownColour = unknownColour ?? new RGB("#ffffff");
+            RunningNCyclesColour = runningNCyclesColour ?? new RGB("#f55442");
 
             // LED Flash Rates
             IdleFlashHz = idleFlashHz;
@@ -115,6 +120,7 @@ namespace HVPSConstants
             ShutDownFlashHz = shutDownFlashHz;
             ErrorFlashHz = errorFlashHz;
             UnknownFlashHz = unknownFlashHz;
+            RunningNCyclesFlashHz = runningNCyclesFlashHz;
         }
     }
 }

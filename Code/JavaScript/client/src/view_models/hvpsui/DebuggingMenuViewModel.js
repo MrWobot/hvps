@@ -65,9 +65,11 @@ export default class DebuggingMenuViewModel{
 	runNCycles(){
 		if(!REGEXP_VALIDATE_NUMBER.test(this.customStr)){
 			this._setCustomStrValid(false);
+			console.log('set invalid');
 			return;
 		}
 		const nCycles = parseInt(this.customStr);
+			console.log('set valid');
 		this._setCustomStrValid(true);
 		HVPSUIAPI.runNCycles({nCycles});
 	}

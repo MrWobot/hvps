@@ -86,6 +86,7 @@ button{
 	--color-state-shut-down:#00ff00;
 	--color-state-running-system-checks:#FF1500;
 	--color-state-error:#f7075f;
+	--color-state-running-n-cycles:#f55442;
 	--color-connecting:red;
 	--color-being-connected-to:yellow;
 	--color-popup-shadow:#27d2b480;

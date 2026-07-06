@@ -27,6 +27,8 @@
         public UInt32 ErrorFlashDelayMs { get; }
         public UInt32 UnknownColour { get; }
         public UInt32 UnknownFlashDelayMs { get; }
+        public UInt32 RunningNCyclesColour { get; }
+        public UInt32 RunningNCyclesFlashDelayMs { get; }
 
         public HVPSConfigurationForMicrocontroller(
             float firstStageVoltageFromRaw,
@@ -53,7 +55,9 @@
             UInt32 errorColour,
             UInt32 errorFlashDelayMs,
             UInt32 unknownColour,
-            UInt32 unknownFlashDelayMs)
+            UInt32 unknownFlashDelayMs,
+            UInt32 runningNCyclesColour,
+            UInt32 runningNCyclesFlashDelayMs)
         {
             FirstStageVoltageFromRaw = firstStageVoltageFromRaw;
             OutputVoltageFromRaw = outputVoltageFromRaw;
@@ -80,6 +84,8 @@
             ErrorFlashDelayMs = errorFlashDelayMs;
             UnknownColour = unknownColour;
             UnknownFlashDelayMs = unknownFlashDelayMs;
+            RunningNCyclesColour = runningNCyclesColour;
+            RunningNCyclesFlashDelayMs = runningNCyclesFlashDelayMs;
         }
     }
 }

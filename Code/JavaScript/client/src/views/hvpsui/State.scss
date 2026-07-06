@@ -40,4 +40,8 @@
 		background-color:var(--color-state-error);
 		color:var(--color-state-error);
 	}
+	&.running-n-cycles{
+		background-color:var(--color-state-running-n-cycles);
+		color:var(--color-state-running-n-cycles);
+	}
 }

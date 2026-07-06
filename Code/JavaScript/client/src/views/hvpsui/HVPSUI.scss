@@ -11,6 +11,9 @@
 	flex-direction:column;
 	border:2px solid var(--color-state-unknown);
     overflow: hidden;
+	.invalid-border{
+		border-color:red;
+	}
 	.state{
 		position:relative;
 	}
@@ -31,6 +34,9 @@
 	}
 	&.state-error{
 		border-color:var(--color-state-error);
+	}
+	&.state-running-n-cycles{
+		border-color:var(--color-state-running-n-cycles);
 	}
 	.debug-button{
 		position:absolute;

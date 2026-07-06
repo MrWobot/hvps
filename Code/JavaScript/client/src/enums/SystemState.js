@@ -9,7 +9,9 @@ const SystemState={
 	Error:6,
 	SamplingHalfCycle:7,
 	SamplingFullCycle:8,
-	CalculatingInductance:9
+	CalculatingInductance:9,
+	RunningNCycles:10,
+	ClearingFPGAError:11
 };
 SystemState.getClassName = (value)=>{
 	if(isNullOrUndefined(value)){
@@ -36,8 +38,11 @@ SystemState.getClassName = (value)=>{
 			return 'sampling-full-cycle';
 		case SystemState.CalculatingInductance:
 			return 'calculating-inductance';
+		case SystemState.RunningNCycles:
+			return 'running-n-cycles';
 		default:
-			throw new Error(`Not implemented for value ${value}`);
+			console.error(new Error(`Not implemented for value ${value}`));
+			return 'unknown';
 	}
 };
 SystemState.getDescription = (value)=>{
@@ -65,8 +70,11 @@ SystemState.getDescription = (value)=>{
 			return 'Sampling Full Cycle';
 		case SystemState.CalculatingInductance:
 			return 'Calculating Inductance';
+		case SystemState.RunningNCycles:
+			return 'Running N Cycles';
 		default:
-			throw new Error(`Not implemented for value ${value}`);
+			console.error(new Error(`Not implemented for value ${value}`));
+			return "Unknown";
 	}
 };
 export default SystemState;

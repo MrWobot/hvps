@@ -67,7 +67,7 @@ module hvps_controller(
 	 wire done_finite_quarter_cycles;
 	 wire [1:0] drive_mode;
     wire [7:0] first_stage_voltage_raw;
-	 wire [3:0] n_quarter_cycles_to_drive;
+	 wire [7:0] n_quarter_cycles_to_drive;
 
     wire [7:0] output_voltage_raw;
     wire [7:0] primary_current_raw;
@@ -77,7 +77,8 @@ module hvps_controller(
 	 wire next_data_out;
 	 wire next_data_ready;
 	 wire can_drive;//The sacred signal from the bangbang controller that goes into the H-Bridge.
-	 assign OT5 = can_drive;
+	 wire test;
+	 assign OT5 = test;
 	 wire h_bridge_on;
 	 wire new_primary_current;
 	 wire new_first_stage_voltage;
@@ -206,7 +207,8 @@ module hvps_controller(
 			.done_finite_quarter_cycles(done_finite_quarter_cycles),
 			.next_data_out(next_data_out),
 			.next_data_ready(next_data_ready),
-			.clear_error(clear_error)
+			.clear_error(clear_error),
+			.test(test)
 	  );
 	  HBridge hBridge(
 		 .clk(clk),           // 50MHz system clock

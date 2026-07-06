@@ -2,7 +2,7 @@ module HBridge(
     input wire clk,           // 50MHz system clock
     input wire can_drive,     // from BangBangController
 	 input wire [1:0] drive_mode,//From CommandHandler
-	 input wire [3:0] n_quarter_cycles_to_drive,
+	 input wire [7:0] n_quarter_cycles_to_drive,
 	 output reg done_finite_quarter_cycles,
 	 input wire shut_down,
 	 output reg doing_sample,
@@ -27,7 +27,7 @@ localparam DEAD_TIME     = 5;    // 5 clocks = 100ns
 reg [11:0] counter = 0;
 reg [3:0]  quarter = 0;        // 0,1,2,3
 reg drive_ended_for_quarter = 0;
-reg [3:0] n_quarter_cycles_driven = 0;
+reg [7:0] n_quarter_cycles_driven = 0;
 reg started_finite_cycles = 1'b0;
 reg hLeft = 0;
 reg lLeft = 0;
@@ -52,14 +52,14 @@ always @(posedge clk) begin
 			counter <= 0;
 			case(drive_mode)
 				DRIVE_MODE_NO_DRIVE: begin
-					n_quarter_cycles_driven <= 4'b0;
+					n_quarter_cycles_driven <= 8'd0;
 					done_finite_quarter_cycles <= 1'b0;
 					drive_ended_for_quarter <= 1'b1;
 					doing_sample <=1'b0;
 					started_finite_cycles<=1'b0;
 				end
 				DRIVE_MODE_DRIVE:begin				
-					n_quarter_cycles_driven <= 4'b0;
+					n_quarter_cycles_driven <= 8'd0;
 					drive_ended_for_quarter <= ~can_drive;
 					done_finite_quarter_cycles <= 1'b0;
 					doing_sample <=1'b0;
@@ -67,7 +67,7 @@ always @(posedge clk) begin
 				DRIVE_MODE_DRIVE_FINITE_QUARTER_CYCLES:begin		
 					if(started_finite_cycles) begin
 						if(n_quarter_cycles_driven< n_quarter_cycles_to_drive) begin
-							n_quarter_cycles_driven <= n_quarter_cycles_driven + 4'd1;
+							n_quarter_cycles_driven <= n_quarter_cycles_driven + 8'd1;
 							drive_ended_for_quarter <= !can_drive;
 							doing_sample <=1'b1;
 						end

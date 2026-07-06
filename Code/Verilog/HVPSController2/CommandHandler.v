@@ -4,15 +4,16 @@ module CommandHandler(
 	input wire [7:0] input_data,
 	output reg [FPGA_STATE_LAST_INDEX:0] state,
 	output reg [1:0] drive_mode,
-	output reg [3:0] n_quarter_cycles_to_drive,
+	output reg [7:0] n_quarter_cycles_to_drive,
 	output reg shut_down_h_bridge,
 	input wire done_finite_quarter_cycles,
 	output reg next_data_out,
 	input wire next_data_ready,
-	output reg clear_error
+	output reg clear_error,
+	output reg test
 );
 initial begin
-
+	test <=0;
 end
 reg [7:0] last_command = 8'b00000000;
 always @(posedge clk_50Mhz) begin
@@ -26,12 +27,11 @@ always @(posedge clk_50Mhz) begin
 			state <= FPGA_STATE_NONE;
 		end
 		FPGA_COMMAND_CLEAR_ERROR:begin
-			if(last_command!=command)begin
-				drive_mode<=DRIVE_MODE_NO_DRIVE;
-				shut_down_h_bridge <= 1;
-				state <= FPGA_STATE_NONE;
-				clear_error <= 1;
-			end
+			test <= 0;
+			drive_mode<=DRIVE_MODE_NO_DRIVE;
+			shut_down_h_bridge <= 1;
+			state <= FPGA_STATE_CLEARED_ERROR;
+			clear_error <= 1;
 		end
 		FPGA_COMMAND_DRIVE:begin
 			drive_mode<=DRIVE_MODE_DRIVE;
@@ -49,7 +49,7 @@ always @(posedge clk_50Mhz) begin
 				end
 			end
 			else begin
-				n_quarter_cycles_to_drive<=4'b0010;
+				n_quarter_cycles_to_drive<=8'b0010;
 				drive_mode<=DRIVE_MODE_DRIVE_FINITE_QUARTER_CYCLES;
 				shut_down_h_bridge <= 0;
 				state <= FPGA_STATE_SAMPLING_HALF_CYCLE;
@@ -66,7 +66,7 @@ always @(posedge clk_50Mhz) begin
 				end
 			end
 			else begin
-				n_quarter_cycles_to_drive<=4'b0100;
+				n_quarter_cycles_to_drive<=8'b0100;
 				drive_mode<=DRIVE_MODE_DRIVE_FINITE_QUARTER_CYCLES;
 				shut_down_h_bridge <= 0;
 				state <= FPGA_STATE_SAMPLING_FULL_CYCLE;
@@ -74,18 +74,19 @@ always @(posedge clk_50Mhz) begin
 		end
 		FPGA_COMMAND_RUN_N_CYCLES:begin
 			if(command==last_command)begin
-				if(/*done_finite_quarter_cycles ||*/ (state == FPGA_STATE_RAN_N_CYCLES))begin
+				if(done_finite_quarter_cycles ||(state == FPGA_STATE_RAN_N_CYCLES))begin
 					drive_mode<=DRIVE_MODE_NO_DRIVE;
 					shut_down_h_bridge <= 1;
 					state <= FPGA_STATE_RAN_N_CYCLES;
+					test <= 1;
 				end
 				else begin
 				end
 			end
 			else begin
-				//n_quarter_cycles_to_drive<=input_data[3:0];
-				//drive_mode<=DRIVE_MODE_DRIVE_FINITE_QUARTER_CYCLES;
-				//shut_down_h_bridge <= 0;
+				n_quarter_cycles_to_drive<=8'd8;//input_data[3:0];
+				drive_mode<=DRIVE_MODE_DRIVE_FINITE_QUARTER_CYCLES;
+				shut_down_h_bridge <= 0;
 				state <= FPGA_STATE_RUNNING_N_CYCLES;
 			end
 		end

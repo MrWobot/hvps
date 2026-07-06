@@ -12,6 +12,10 @@ namespace HVPSAPI.Messages
         [JsonInclude]
         [DataMember(Name = RunNCyclesMessageDataMemberNames.NCycles)]
         public byte NCycles { get; }
+        protected RunNCyclesMessage():base()
+        {
+            Type = MessageTypes.RunNCycles;
+        }
         public RunNCyclesMessage(byte nCycles)
             : base()
         {

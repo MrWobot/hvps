@@ -52,6 +52,7 @@ namespace HVPSConfigurationGenerator
                 shutDownColour: constants.ShutDownColour.ToUInt32(),
                 shuttingDownColour: constants.ShuttingDownColour.ToUInt32(),
                 unknownColour: constants.UnknownColour.ToUInt32(),
+                runningNCyclesColour: constants.RunningNCyclesColour.ToUInt32(),
 
                 idleFlashDelayMs: FlashHzToMilliseconds(
                     constants.IdleFlashHz),
@@ -66,7 +67,9 @@ namespace HVPSConfigurationGenerator
                 errorFlashDelayMs: FlashHzToMilliseconds(
                     constants.ErrorFlashHz),
                 unknownFlashDelayMs: FlashHzToMilliseconds(
-                    constants.UnknownFlashHz)
+                    constants.UnknownFlashHz),
+                runningNCyclesFlashDelayMs: FlashHzToMilliseconds(
+                    constants.RunningNCyclesFlashHz)
             );
 
             string dependenciesIncludePathPrefix = "";

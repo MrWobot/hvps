@@ -145,7 +145,7 @@ void Port_ControllingMachine::handleIncomingMessage(cJSON* message, bool& dontDe
 		return;
 	}
 	if(strcmp(type, RunNCyclesMessage::TYPE) == 0){
-		
+		LOG_INFO("Port received run N Cycles");
 		CleanupBucket cleanupBucket;
 		RunNCyclesMessage* runNCyclesMessage = RunNCyclesMessage::fromJSON(message, cleanupBucket);
 		_highSpeedCore.runNCycles(runNCyclesMessage->getNCycles());

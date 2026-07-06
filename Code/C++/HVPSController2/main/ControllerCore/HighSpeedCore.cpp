@@ -9,6 +9,7 @@
 #include "Macros/GetFileName.hpp"
 #include "Generated/Enums/FPGACommand.hpp"
 #include "Generated/Enums/FPGAError.hpp"
+#include "Generated/Enums/FPGAState.hpp"
 #include "Enums/SampleType.hpp"
 #include "ADC/ADC.hpp"
 #include "Sampling.hpp"
@@ -271,7 +272,8 @@ void HighSpeedCore::doClearFPGAError(){
 	while(true){
 		Delay::ms(100);
 		uint8_t error = _fpgaInterface.getError();
-		if(error==static_cast<uint8_t>(FPGAError::NONE)){
+		if(error==static_cast<uint8_t>(FPGAError::NONE)
+			&&(_fpgaInterface.getState()==static_cast<uint8_t>(FPGAState::CLEARED_ERROR))){
 			dispatchMessage("Cleared errors!");
 			break;
 		}

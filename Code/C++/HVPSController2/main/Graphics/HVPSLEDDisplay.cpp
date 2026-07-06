@@ -68,6 +68,9 @@ void HVPSLEDDisplay::indicateState(SystemState systemState){
 		case SystemState::CalculatingInductance:
 			show(_config.runningSystemChecksColour, _config.runningSystemChecksFlashDelayMs);
 			break;
+		case SystemState::RunningNCycles:
+			show(_config.runningNCyclesColour, _config.runningNCyclesFlashDelayMs);
+			break;
 		default:
 			show(_config.unknownColour, _config.unknownFlashDelayMs);
 			break;

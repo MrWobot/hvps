@@ -15,7 +15,4 @@ _hVPSLEDDisplay(hVPSLEDDisplay){
 void LocalUI::handleSystemStateChanged(SystemState systemState){
 	LOG_INFO("LocalUI::handleSystemStateChanged");
 	_hVPSLEDDisplay.indicateState(systemState);
-	if(systemState==SystemState::Live){
-		LOG_INFO("Was live");
-	}
 }

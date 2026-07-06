@@ -10,6 +10,7 @@
         SampledFullCycle = 5,
         NextDataBytes= 6,
         RunningNCycles = 7,
-        RanNCycles = 8
+        RanNCycles = 8,
+        ClearedError = 9
     }
 }
