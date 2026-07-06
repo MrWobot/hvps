@@ -37,12 +37,13 @@ private:
 	std::atomic<bool> _shuttingOrShutDown_2;
 	std::atomic<SystemState> _actualSystemState;
 	std::atomic<SystemState> _desiredSystemState;
+	std::atomic<uint8_t> _runNCycles_nCycles;
 	std::atomic<bool> _inError;
 	std::mutex _mutexControlInput;
 	std::mutex _mutexSystemChecksResult;
 	std::shared_ptr<SystemChecksResult> _systemChecksResult;
 	Latch _runSystemChecksLatch;
-	volatile uint64_t _startLiveTimeUs;
+	volatile int64_t _startLiveTimeUs;
 	volatile uint64_t _nCyclesCount;
 	volatile uint16_t _peakCurrentSenseVoltageRaw;
 	
@@ -59,7 +60,6 @@ public:
 	void stop();
 	std::shared_ptr<SystemChecksResult>  runSystemChecksOnly();
 	void shutDown();
-	void setInError(bool value);
 	SystemState getActualSystemState();
 	float getFrequencyHz(ValueBoundType& valueBoundType);
 	float getActualPeakPrimaryCurrent();
@@ -68,6 +68,8 @@ public:
 	void sampleHalfCycle();
 	void sampleFullCycle();
 	void calculateInductance();
+	void runNCycles(uint8_t nCycles);
+	void clearError();
 private:
     friend class SingletonBase<HighSpeedCore>;
 	const float SAFE_OUTPUT_VOLTAGE = 20.0f;
@@ -79,6 +81,7 @@ private:
 		bool inError
 	)noexcept;
 	
+	void setInError(bool value);
 	void startCoreTask();
 	void startFrequencyMeasurement();
 	void _run();
@@ -90,7 +93,9 @@ private:
 	void doSamplingHalfCycle();
 	void doSamplingFullCycle();
 	void doCalculatingInductance();
+	void doRunNCycles();
 	void doError();
+	void doClearFPGAError();
 	SystemState getDesiredSystemState();
 	void setDesiredSystemState(SystemState systemState);
 	void setActualSystemState(SystemState systemState);
@@ -105,4 +110,5 @@ private:
 	void calculateAdditionalShutdownTime(float voltage, float& timeSeconds, float& time2Seconds);
 	void setFPGACommandDrive();
 	void setFPGACommandNone();
+	void reportFPGAErrorIfHas();
 };

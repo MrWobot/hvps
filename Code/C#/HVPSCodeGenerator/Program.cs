@@ -83,22 +83,24 @@ namespace HVPSCodeGenerator
             Output actualFirstStageVoltage = new Output("ActualFirstStageVoltage", VariableType.Byte);
             Output actualOutputVoltage = new Output("ActualOutputVoltage", VariableType.Byte);
             Output actualPeakPrimaryCurrent = new Output("ActualPeakPrimaryCurrent", VariableType.Byte);
-            Constants4K constants = new Constants4K();
+            Constants4kV constants = new Constants4kV();
             FPGAInterfaceSetup fpgaInterfaceSetup = new FPGAInterfaceSetup(
                 "HVPS_FPGAInterface",
                 new IOVariable[] {
                     //PUT MOST IMPORTANT FIRST
                     new Input("DesiredOutputVoltage", VariableType.Byte),
                     new Input("Command", VariableType.Byte),
+                    new Input("InputData", VariableType.Byte),
                     new Output("DoneCommand", VariableType.Bit),
                     actualFirstStageVoltage,
                     actualOutputVoltage,
                     actualPeakPrimaryCurrent,
                     new Output("State", VariableType.Byte),
                     new Output("MaxFirstStageVoltage", VariableType.Byte),
-                    new Output("MaxOutputVoltageVolts", VariableType.Byte),
+                    new Output("MaxOutputVoltage", VariableType.Byte),
                     new Output("MaxPrimaryCurrent", VariableType.Byte),
                     new Output("EchoDesiredOutputVoltage", VariableType.Byte),
+                    new Output("Error", VariableType.Byte),
                     new Output("BufferedData", VariableType.CustomLengthBytes, constants.FpgaInterfaceBufferedDataLength),
                 },
                 new GetMultipleVariableCPlusPlusMethod[] {

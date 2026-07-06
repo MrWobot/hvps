@@ -3,7 +3,7 @@
 class FrequencyMeter{
 private:
 	volatile uint32_t _cyclesRanCountPlusOne;
-	volatile uint64_t _startTimeForFrequencyMeasurement_ms;
+	volatile int64_t _startTimeForFrequencyMeasurement_ms;
 	volatile bool _overflowed;
 public:
 	FrequencyMeter();

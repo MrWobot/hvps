@@ -49,6 +49,7 @@ export default class ChartWindow{
 	}
 	_generateGraph(){
 		const data = this._model.data;
+		const title = this._model.title;
 		console.log(data);
 		const labels = data.map((_, i) => i);
 		new Chart(this._canvas, {
@@ -56,7 +57,7 @@ export default class ChartWindow{
 			data: {
 				labels,
 				datasets:[{
-					label: 'Primary Current (A)',
+					label: title,
 					data,
 					borderColor: '#42f59c',
 					backgroundColor: 'transparent',

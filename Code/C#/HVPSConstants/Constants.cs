@@ -5,21 +5,34 @@ namespace HVPSConstants
 {
     public class Constants
     {
+        [ExcelSpreadsheetVariable]
         public float FirstStageVoltageFromRaw { get; }
+        [ExcelSpreadsheetVariable]
         public float OutputVoltageFromRaw { get; }
+        [ExcelSpreadsheetVariable]
         public float MaxOutputVoltageVolts { get; }
+        [ExcelSpreadsheetVariable]
         public float MinOutputVoltageVolts { get; }
+        [ExcelSpreadsheetVariable]
         public float PowerSupplyVoltageFeedbackPotentialDividerRatio { get; }
+        [ExcelSpreadsheetVariable]
         public float PrimaryCurrentFromRaw { get; }
-        public float MaxTemperatureMosfetDegreesC { get; }
+        [ExcelSpreadsheetVariable]
+        public float MaxMosfetTemperatureDegreesC { get; }
+        [ExcelSpreadsheetVariable]
         public uint VillardCapacitorsBleedTimeConstantSeconds { get; }
+        [ExcelSpreadsheetVariable]
         public float MaxFirstStageVoltage { get; }
+        [ExcelSpreadsheetVariable]
         public float MaxADCConversionTime { get; }
+        [ExcelSpreadsheetVariable]
         public float MaxSupplyVoltage { get; }
+        [ExcelSpreadsheetVariable]
         public float MaxPrimaryCurrent { get; }
+        [ExcelSpreadsheetVariable]
         public float TransformerLeakageInductance { get; }
-        public uint PingTimeoutMilliseconds { get; }
-        public uint SendPingIntervalMilliseconds { get; }
+        public static uint PingTimeoutMilliseconds => 10000;
+        public static UInt32 SendPingIntervalMilliseconds => 2000;
         public int FpgaInterfaceBufferedDataLength { get; }
         public int FpgaCaptureBuffersLengthBytes { get; }
         public RGB IdleColour { get; }
@@ -43,17 +56,15 @@ namespace HVPSConstants
             float minOutputVoltageVolts,
             float powerSupplyVoltageFeedbackPotentialDividerRatio,
             float primaryCurrentFromRaw,
-            float maxTemperatureMosfetDegreesC,
+            float maxMosfetTemperatureDegreesC,
             UInt32 villardCapacitorsBleedTimeConstantSeconds,
             float maxFirstStageVoltage,
             float maxSupplyVoltage,
             float maxPrimaryCurrent,
             float transformerLeakageInductance,
-            UInt32 pingTimeoutMilliseconds = 10000,
-            UInt32 sendPingIntervalMilliseconds = 2000,
+            float maxADCConversionTime,
             int fpgaInterfaceBufferedDataLength = 128,
             int fpgaCaptureBuffersLengthBytes = 768,
-            float maxADCConversionTime = 33f / 50000000f,
             RGB? idleColour = null,
             RGB? liveColour = null,
             RGB? runningSystemChecksColour = null,
@@ -76,7 +87,7 @@ namespace HVPSConstants
             MinOutputVoltageVolts = minOutputVoltageVolts;
             PowerSupplyVoltageFeedbackPotentialDividerRatio = powerSupplyVoltageFeedbackPotentialDividerRatio;
             PrimaryCurrentFromRaw = primaryCurrentFromRaw;
-            MaxTemperatureMosfetDegreesC = maxTemperatureMosfetDegreesC;
+            MaxMosfetTemperatureDegreesC = maxMosfetTemperatureDegreesC;
             VillardCapacitorsBleedTimeConstantSeconds = villardCapacitorsBleedTimeConstantSeconds;
             MaxFirstStageVoltage = maxFirstStageVoltage;
             MaxADCConversionTime = maxADCConversionTime;
@@ -84,9 +95,6 @@ namespace HVPSConstants
             MaxPrimaryCurrent = maxPrimaryCurrent;
             TransformerLeakageInductance = transformerLeakageInductance;
 
-            // Network and FPGA sizing
-            PingTimeoutMilliseconds = pingTimeoutMilliseconds;
-            SendPingIntervalMilliseconds = sendPingIntervalMilliseconds;
             FpgaInterfaceBufferedDataLength = fpgaInterfaceBufferedDataLength;
             FpgaCaptureBuffersLengthBytes = fpgaCaptureBuffersLengthBytes;
 

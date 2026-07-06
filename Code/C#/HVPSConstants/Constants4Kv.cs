@@ -1,20 +1,21 @@
 ﻿namespace HVPSConstants
 {
-    public class Constants4K:Constants
+    public class Constants4kV:Constants
     {
-        public Constants4K() : base(
+        public Constants4kV() : base(
             firstStageVoltageFromRaw: 1.65f,
-            outputVoltageFromRaw: 18.8f,
+            maxFirstStageVoltage: 400,
             maxOutputVoltageVolts: 4000,
+            maxPrimaryCurrent: 15,
+            maxSupplyVoltage: 44.1f,
+            maxMosfetTemperatureDegreesC: 60,
             minOutputVoltageVolts: 2000,
+            outputVoltageFromRaw: 37.64706f,
             powerSupplyVoltageFeedbackPotentialDividerRatio: 16.5f,
             primaryCurrentFromRaw: 0.156862745f,
-            maxTemperatureMosfetDegreesC: 50,
+            transformerLeakageInductance: 6.6e-6f,
             villardCapacitorsBleedTimeConstantSeconds: 14,
-            maxFirstStageVoltage: 400,
-            maxSupplyVoltage: 44.1f,
-            maxPrimaryCurrent: 20,
-            transformerLeakageInductance: 6.6e-6f
+            maxADCConversionTime: 0.00000066f//33f / 50000000f
         )
         { 
             

@@ -22,7 +22,7 @@ void FrequencyMeter::tick(){
 	}
 }
 bool FrequencyMeter::calculateAndRestart(uint64_t& frequencyHz){
-	uint64_t now_ms	= TimeHelper::ms();
+	int64_t now_ms	= TimeHelper::ms();
 	if(_overflowed||(_cyclesRanCountPlusOne==0)){
 		_cyclesRanCountPlusOne = 1;
 		_startTimeForFrequencyMeasurement_ms = now_ms;
@@ -31,10 +31,10 @@ bool FrequencyMeter::calculateAndRestart(uint64_t& frequencyHz){
 		return false;
 	}
 	uint32_t nCycles = _cyclesRanCountPlusOne-1;
-	uint64_t startTime_ms = _startTimeForFrequencyMeasurement_ms;
+	int64_t startTime_ms = _startTimeForFrequencyMeasurement_ms;
 	_cyclesRanCountPlusOne = 1;
 	_startTimeForFrequencyMeasurement_ms = now_ms;
-	uint64_t dTms = now_ms - startTime_ms;
+	uint64_t dTms = static_cast<uint64_t>(now_ms - startTime_ms);
 	if(dTms==0){
 		LOG_INFO("Failed b");
 		frequencyHz = 0;

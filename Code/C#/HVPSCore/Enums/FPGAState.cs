@@ -9,5 +9,7 @@
         SamplingFullCycle = 4,
         SampledFullCycle = 5,
         NextDataBytes= 6,
+        RunningNCycles = 7,
+        RanNCycles = 8
     }
 }

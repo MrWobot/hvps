@@ -21,7 +21,7 @@ void Base64::encodeToCharArray(
 	size_t input_length = data.size();
 	size_t output_length = getEncodeLength(data);
 
-    for (int i = 0, j = indexFromInclusive; i < input_length;) {
+    for (size_t i = 0, j = indexFromInclusive; i < input_length;) {
 
         uint32_t octet_a = i < input_length ? (uint8_t)data[i++] : 0;
         uint32_t octet_b = i < input_length ? (uint8_t)data[i++] : 0;
@@ -36,5 +36,5 @@ void Base64::encodeToCharArray(
     }
 
     for (int i = 0; i < mod_table[input_length % 3]; i++)
-        charArray[output_length - 1 - i] = '=';
+        charArray[static_cast<int>(output_length) - 1 - i] = '=';
 }

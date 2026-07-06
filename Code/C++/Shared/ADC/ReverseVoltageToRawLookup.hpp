@@ -10,16 +10,16 @@ class ReverseVoltageToRawLookup {
 private:
     static const char* TAG;
 	ReverseVoltageToRawLookup_Entry* _entries;
-	int nIntervals;
+	size_t nIntervals;
 
 public:
-	ReverseVoltageToRawLookup(int intervalMillivolts, esp_adc_cal_characteristics_t* adc_chars);
+	ReverseVoltageToRawLookup(uint16_t intervalMillivolts, esp_adc_cal_characteristics_t* adc_chars);
 	~ReverseVoltageToRawLookup();
 
-	uint32_t lookupMillivolts(uint32_t voltageMillivolts);
-	uint32_t lookupVolts(float volts);
+	uint16_t lookupMillivolts(uint16_t voltageMillivolts);
+	uint16_t lookupVolts(float volts);
 
 private:
-	uint32_t findRawForVoltage(uint32_t targetVoltageMillivolts, esp_adc_cal_characteristics_t* adc_chars);
+	uint16_t findRawForVoltage(uint16_t targetVoltageMillivolts, esp_adc_cal_characteristics_t* adc_chars);
 };
 #endif

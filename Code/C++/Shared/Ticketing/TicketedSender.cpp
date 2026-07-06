@@ -53,7 +53,7 @@ std::shared_ptr<cJSON> TicketedSender::send(cJSON* request, uint64_t timeoutMill
 	uint64_t ticket = TicketSource::next();
 	JHelper::setUInt64(request, MessageConstants::TICKET_KEY, ticket);
 	TicketedSenderHandle* handle = new TicketedSenderHandle(
-		TimeHelper::ms() + timeoutMilliseconds);
+		static_cast<uint64_t>(TimeHelper::ms()) + timeoutMilliseconds);
 	std::unique_lock<std::mutex> lock(_mutex);
 	if(_disposed){
 		delete handle;
@@ -113,7 +113,7 @@ bool TicketedSender::handleTicketedMessage(cJSON* message, char* type){
 }
 void TicketedSender::checkTimedOutOnAllInstances()
 {
-    const uint64_t millisecondsNow = TimeHelper::ms();
+    const uint64_t millisecondsNow = static_cast<uint64_t>(TimeHelper::ms());
 
     std::unique_lock<std::mutex> lock(_mutexInstances);
 

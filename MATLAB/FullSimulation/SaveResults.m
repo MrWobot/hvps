@@ -3,13 +3,13 @@ function save_results()
     
     % Try just using it directly
     if isstruct(i_ramp)
-        val = i_ramp.Data(end);
+        i_ramp_rate_first_quarter_cycle_value = i_ramp.Data(end);
     else
-        val = i_ramp(end);
+        i_ramp_rate_first_quarter_cycle_value = i_ramp(end);
     end
     
     data = struct();
-    data.i_ramp_rate_first_quarter_cycle = val;
+    data.i_ramp_rate_first_quarter_cycle = i_ramp_rate_first_quarter_cycle_value;
     
     json_str = jsonencode(data);
     

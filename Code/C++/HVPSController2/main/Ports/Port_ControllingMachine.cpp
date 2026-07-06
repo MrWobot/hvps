@@ -17,6 +17,7 @@
 #include "Generated/Messages/SampleHalfCycleMessage.hpp"
 #include "Generated/Messages/SampleFullCycleMessage.hpp"
 #include "Generated/Messages/CalculateInductanceMessage.hpp"
+#include "Generated/Messages/RunNCyclesMessage.hpp"
 #include "System/CrashReporter.hpp"
 #include "Enums/SubsystemIdentifiers.hpp"
 #include "Core/CleanupBucket.hpp"
@@ -143,6 +144,13 @@ void Port_ControllingMachine::handleIncomingMessage(cJSON* message, bool& dontDe
 		_highSpeedCore.calculateInductance();
 		return;
 	}
+	if(strcmp(type, RunNCyclesMessage::TYPE) == 0){
+		
+		CleanupBucket cleanupBucket;
+		RunNCyclesMessage* runNCyclesMessage = RunNCyclesMessage::fromJSON(message, cleanupBucket);
+		_highSpeedCore.runNCycles(runNCyclesMessage->getNCycles());
+		return;
+	}
 	if(strcmp(type, PingMessage::TYPE) == 0){
 		return;
 	}
@@ -192,8 +200,7 @@ void Port_ControllingMachine::handleOnClosed(){
 void Port_ControllingMachine::handleClearLoggedErrors(){
 	CrashReporter::clearRecord();
 	Aborter::clearLastAbortReason();
-	_highSpeedCore.setInError(false);
-	 sendConsoleMessage("Cleared errors!", false);
+	_highSpeedCore.clearError();
 }
 void Port_ControllingMachine::sendErrors(){
 	CleanupBucket cleanupBucket;

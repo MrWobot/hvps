@@ -9,7 +9,7 @@ MonitorCurrentAndPowerHandle::MonitorCurrentAndPowerHandle(
 ) noexcept
     : _exit(false),
       _currentA(0),
-      _energyDisipatedJPerUs(energyDisipatedJPerS * 1000.0),
+      _energyDisipatedJPerUs(energyDisipatedJPerS * 1000.0f),
       _senseResistanceOhms(senseResistanceOhms),
       _outputCurrentLimitingResistanceOhms(outputCurrentLimitingResistanceOhms),
       _cumulativeEnergyThresholdJ(cumulativeEnergyThresholdJ),
@@ -38,7 +38,7 @@ float MonitorCurrentAndPowerHandle::getCurrentA() const noexcept {
 }
 
 void MonitorCurrentAndPowerHandle::setEnergyDisipatedJPerS(float value) noexcept {
-    _energyDisipatedJPerUs.store(value * 1000.0, std::memory_order_relaxed);
+    _energyDisipatedJPerUs.store(value * 1000.0f, std::memory_order_relaxed);
 }
 
 float MonitorCurrentAndPowerHandle::getEnergyDisipatedUjPerUs() const noexcept {

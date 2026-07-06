@@ -6,15 +6,15 @@ const char* ReverseVoltageToRawLookup::TAG = "ReverseVoltageToRawLookup";
 Voltages in between the steps can be used via a linear interpolation.
 */
 ReverseVoltageToRawLookup::ReverseVoltageToRawLookup(
-	int intervalMillivolts, esp_adc_cal_characteristics_t* adc_chars) {
+	uint16_t intervalMillivolts, esp_adc_cal_characteristics_t* adc_chars) {
 
-	nIntervals = (int)ceil(3300.0 / intervalMillivolts) + 1;
+	nIntervals = static_cast<size_t>(ceilf(3300.0f / static_cast<float>(intervalMillivolts))) + 1;
 	_entries = new ReverseVoltageToRawLookup_Entry[nIntervals];
 
-	for (int i = 0; i < nIntervals; ++i) {
-		uint32_t voltage = i * intervalMillivolts;
-		uint32_t raw = findRawForVoltage(voltage, adc_chars);
-		if(raw>4095){
+	for (size_t i = 0; i < nIntervals; ++i) {
+		uint16_t voltage = static_cast<uint16_t>(static_cast<int>(i) * intervalMillivolts);
+		uint16_t raw = findRawForVoltage(voltage, adc_chars);
+		if(raw>4095U){
 			LOG_INFO("Out of range raw was returned with value %u", raw);
 			abort();
 		}
@@ -26,31 +26,32 @@ ReverseVoltageToRawLookup::~ReverseVoltageToRawLookup() {
 	delete[] _entries;
 }
 
-uint32_t ReverseVoltageToRawLookup::lookupMillivolts(uint32_t voltageMillivolts) {
+uint16_t ReverseVoltageToRawLookup::lookupMillivolts(uint16_t voltageMillivolts) {
 	// Binary search over precomputed _entries
-	uint32_t testVoltage = _entries[0].voltage;
+	uint16_t testVoltage = _entries[0].voltage;
 	if(testVoltage >=voltageMillivolts){
 		return _entries[0].raw;
 	}
-	int highIndex = nIntervals - 1;
+	size_t highIndex = nIntervals - 1;
 	testVoltage = _entries[highIndex].voltage;
 	if(testVoltage <=voltageMillivolts){
 		return _entries[highIndex].raw;
 	}
-	int lowIndex = 0;
+	size_t lowIndex = 0;
 	while (true) {
-		int midIndex = (lowIndex + highIndex) / 2;
+		size_t midIndex = (lowIndex + highIndex) / 2;
 		if(midIndex==lowIndex||midIndex==highIndex){
-			float denominator = (float)(_entries[highIndex].voltage - _entries[lowIndex].voltage);
+			float denominator = static_cast<float>(_entries[highIndex].voltage - _entries[lowIndex].voltage);
 			if (denominator <= 0) {
 				return _entries[lowIndex].raw;
 			}
 			
-			float fraction = (float)(voltageMillivolts - _entries[lowIndex].voltage) / denominator;
-			float interpolated = ((float)(_entries[highIndex].raw - _entries[lowIndex].raw) 
-				* fraction) + _entries[lowIndex].raw;
-
-			return (uint32_t)interpolated;
+			float fraction = static_cast<float>(voltageMillivolts - _entries[lowIndex].voltage) / denominator;
+			uint16_t interpolated = static_cast<uint16_t>(
+				static_cast<float>(_entries[highIndex].raw - _entries[lowIndex].raw) * fraction
+				+ static_cast<float>(_entries[lowIndex].raw)
+			);
+			return interpolated;
 		}
 		testVoltage = _entries[midIndex].voltage;
 		if(testVoltage>voltageMillivolts){
@@ -65,39 +66,36 @@ uint32_t ReverseVoltageToRawLookup::lookupMillivolts(uint32_t voltageMillivolts)
 	}
 }
 
-uint32_t ReverseVoltageToRawLookup::lookupVolts(float volts) {
-	uint32_t millivolts = static_cast<uint32_t>(volts * 1000.0);
+uint16_t ReverseVoltageToRawLookup::lookupVolts(float volts) {
+	uint16_t millivolts = static_cast<uint16_t>(volts * 1000.0f);
 	return lookupMillivolts(millivolts);
 }
-uint32_t ReverseVoltageToRawLookup::findRawForVoltage(
-	uint32_t targetVoltageMillivolts,
+uint16_t ReverseVoltageToRawLookup::findRawForVoltage(
+	uint16_t targetVoltageMillivolts,
 	esp_adc_cal_characteristics_t* adc_chars) {
 
-	int low = 0;
-	int high = 4095;
-	bool shiftedHighElseLowToMid = false;
-	uint32_t voltage;
-	uint32_t lowestVoltageCanReturn = esp_adc_cal_raw_to_voltage(low, adc_chars);
+	uint16_t low = 0;
+	uint16_t high = 4095;
+	uint16_t voltage;
+	uint16_t lowestVoltageCanReturn =  static_cast<uint16_t>(esp_adc_cal_raw_to_voltage(low, adc_chars));
 	if(targetVoltageMillivolts<=lowestVoltageCanReturn)
 		return low;
-	uint32_t highestVoltageCanReturn = esp_adc_cal_raw_to_voltage(high, adc_chars);
+	uint16_t highestVoltageCanReturn =  static_cast<uint16_t>(esp_adc_cal_raw_to_voltage(high, adc_chars));
 	if(targetVoltageMillivolts>=highestVoltageCanReturn)
 		return high;
 	while (true) {
-		int mid = (low + high) / 2;
+		uint16_t mid = static_cast<uint16_t>((low + high) / 2);
 		if(mid==low||high==mid){
 			return low;
 		}
-		voltage = esp_adc_cal_raw_to_voltage(mid, adc_chars);
+		voltage =  static_cast<uint16_t>(esp_adc_cal_raw_to_voltage(mid, adc_chars));
 
 		if (voltage < targetVoltageMillivolts) {
 			low = mid;
-			shiftedHighElseLowToMid = true;
 			continue;
 		} 
 		if(voltage > targetVoltageMillivolts){
 			high = mid;
-			shiftedHighElseLowToMid = false;
 			continue;
 		}
 		return mid;

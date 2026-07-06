@@ -72,7 +72,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FPGAInterfaceGenerator", "F
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FPGAConstantsGenerator", "FPGAConstantsGenerator\FPGAConstantsGenerator.csproj", "{2627973F-7E26-4DEB-BC37-6EADD5B7BDF5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HVPSControllerSimulation", "HVPSControllerSimulation\HVPSControllerSimulation.csproj", "{52A1FE78-F9A3-4D49-8253-4D7F0DE9F386}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HVPSControllerSimulation", "HVPSControllerSimulation\HVPSControllerSimulation.csproj", "{52A1FE78-F9A3-4D49-8253-4D7F0DE9F386}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HVPSGenerateConfigurationClassesAndMatlabParameters", "HVPSGenerateConfigurationClassesAndMatlabParameters\HVPSGenerateConfigurationClassesAndMatlabParameters.csproj", "{AAAE94A3-5290-4C49-8E56-A4AC39A12D21}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -224,6 +226,10 @@ Global
 		{52A1FE78-F9A3-4D49-8253-4D7F0DE9F386}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{52A1FE78-F9A3-4D49-8253-4D7F0DE9F386}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{52A1FE78-F9A3-4D49-8253-4D7F0DE9F386}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAAE94A3-5290-4C49-8E56-A4AC39A12D21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAAE94A3-5290-4C49-8E56-A4AC39A12D21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAAE94A3-5290-4C49-8E56-A4AC39A12D21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAAE94A3-5290-4C49-8E56-A4AC39A12D21}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -26,9 +26,9 @@ export default class SampleViewModel{
 			const primaryCurrentRaw = bytes[i++];
 			const outputVoltageRaw = bytes[i++];
 			const firstStageVoltageRaw = bytes[i++];
-			this._primaryCurrents.push(primaryCurrentRaw * HVPSConfiguration.primaryCurrentFromRaw);
-			this._outputVoltages.push(outputVoltageRaw * HVPSConfiguration.outputVoltageFromRaw);
-			this._firstStageVoltages.push(firstStageVoltageRaw * HVPSConfiguration.firstStageVoltageThresholdVolts);
+			this._primaryCurrents.push(primaryCurrentRaw * HVPSConfiguration.getPrimaryCurrentFromRaw());
+			this._outputVoltages.push(outputVoltageRaw * HVPSConfiguration.getOutputVoltageFromRaw());
+			this._firstStageVoltages.push(firstStageVoltageRaw * HVPSConfiguration.getFirstStageVoltageFromRaw());
 		}
 		exposeBinding(this, 'showMenu', ()=>this.showMenu, (value)=>this.showMenu = value);
 	}

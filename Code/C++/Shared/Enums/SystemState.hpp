@@ -12,6 +12,8 @@ enum SystemState {
 	Error = 6,
 	SamplingHalfCycle = 7,
 	SamplingFullCycle = 8,
-	CalculatingInductance = 9
+	CalculatingInductance = 9,
+	RunningNCycles = 10,
+	ClearingFPGAError = 11
 };
 #endif

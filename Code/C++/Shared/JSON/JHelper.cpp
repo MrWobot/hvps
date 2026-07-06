@@ -1,5 +1,6 @@
 	#include "JHelper.hpp"
 	#include <cstring>
+	#include "System/SafeAbort.hpp"
 	
 	std::shared_ptr<cJSON> JHelper::toSharedPtr(cJSON* raw) {
 		return std::shared_ptr<cJSON>(raw, cJSON_Delete); // custom deleter
@@ -361,14 +362,23 @@
 		cJSON_AddNumberToObject(obj, key, value);
 	}
     void JHelper::addInt64(cJSON* obj, const char* key, int64_t value){
-		cJSON_AddNumberToObject(obj, key, value);
+		if (value > MAX_NUM || value < MIN_NUM) {
+			SAFE_ABORT("int64_t value too large for exact double representation");
+		}
+		cJSON_AddNumberToObject(obj, key, static_cast<double>(value));
 	}
     void JHelper::addUInt64(cJSON* obj, const char* key, uint64_t value){
-		cJSON_AddNumberToObject(obj, key, value);
+		if (value > MAX_NUM || value < MIN_NUM) {
+			SAFE_ABORT("int64_t value too large for exact double representation");
+		}
+		cJSON_AddNumberToObject(obj, key, static_cast<double>(value));
 	}
     void JHelper::setUInt64(cJSON* obj, const char* key, uint64_t value){
 		cJSON_DeleteItemFromObjectCaseSensitive(obj, key);
-		cJSON_AddNumberToObject(obj, key, value);
+		if (value > MAX_NUM || value < MIN_NUM) {
+			SAFE_ABORT("int64_t value too large for exact double representation");
+		}
+		cJSON_AddNumberToObject(obj, key, static_cast<double>(value));
 	}
     void JHelper::addFloat(cJSON* obj, const char* key, float value){
 		cJSON_AddNumberToObject(obj, key, value);
@@ -440,7 +450,10 @@
 			cJSON_AddNullToObject(obj, key);
 			return;
 		}
-		cJSON_AddNumberToObject(obj, key, *value);
+		if (*value > MAX_NUM || *value < MIN_NUM) {
+			SAFE_ABORT("int64_t value too large for exact double representation");
+		}
+		cJSON_AddNumberToObject(obj, key, static_cast<double>(*value));
 	}
     void JHelper::addNullableFloat(cJSON* obj, const char* key, std::optional<float> value){
 		if(!value.has_value())

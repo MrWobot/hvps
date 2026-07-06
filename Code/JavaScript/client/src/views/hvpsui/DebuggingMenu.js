@@ -9,6 +9,7 @@ import isMobile from '../../core/isMobile';
 import isNullOrUndefined from '../../core/isNullOrUndefined';
 import Sample from './Sample';
 import Blocker from '../../tippler_ui/Blocker';
+import TextBox from '../../tippler_ui/TextBox';
 import './DebuggingMenu.scss';
 export default class DebuggingMenu{
 	constructor({model, parentModel}){
@@ -24,9 +25,22 @@ export default class DebuggingMenu{
 			_createTextButton({className:'sample-full-cycle-button', callback:model.sampleFullCycle, disposes,
 				useMouseDown:true, text:'Sample Fl Cycle'}),
 			_createTextButton({className:'calculate-inductance-button', callback:model.calculateInductance, disposes,
-				useMouseDown:true, text:'Calculate Inductance'})
+				useMouseDown:true, text:'Calculate Inductance'}),
+			_createTextButton({className:'run-n-cycles-button', callback:model.runNCycles, disposes,
+				useMouseDown:true, text:'Run N Cycles'})
 		].forEach(b=>controlButtonsElement.appendChild(b));
 		this._element.appendChild(controlButtonsElement);
+		this._textBoxCustomStr = new TextBox({ 
+			className:'text-box-custom-str',
+			placeholder:'Custom String',
+			validate:true,
+			propertyName:'customStr',
+			model,
+			singleLine:true, 
+			autoWidth:false, 
+			maxLength:10
+		});
+		controlButtonsElement.appendChild(this._textBoxCustomStr.element);
 		this._samplesElement = E.div('samples');
 		this._element.appendChild(this._samplesElement);
 		const samplesTitleElement = E.div('title');

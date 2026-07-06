@@ -1,4 +1,4 @@
 typedef struct {
-    uint32_t voltage;
-    uint32_t raw;
+    uint16_t voltage;
+    uint16_t raw;
 } ReverseVoltageToRawLookup_Entry;

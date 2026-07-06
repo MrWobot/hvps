@@ -1,5 +1,8 @@
 #include "BacktraceHelper.hpp"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
 #include "esp_debug_helpers.h"
+#pragma GCC diagnostic pop
 
 #include "esp_cpu_utils.h"
 

@@ -63,6 +63,7 @@ module hvps_controller(
 	 wire [1023:0] buffered_data;
     wire [7:0] desired_output_voltage;
     wire [FPGA_COMMAND_LAST_INDEX:0] command;
+    wire [7:0] input_data;
 	 wire done_finite_quarter_cycles;
 	 wire [1:0] drive_mode;
     wire [7:0] first_stage_voltage_raw;
@@ -83,6 +84,21 @@ module hvps_controller(
 	 wire new_output_voltage;
 	 wire [5:0] new_primary_current_lag;
 	 
+	 wire in_error;
+	 wire[7:0] error;
+	 wire primary_current_adc_timed_out;
+	 wire first_stage_voltage_adc_timed_out;
+	 wire output_voltage_adc_timed_out;
+	 wire clear_error;
+	 ErrorsManager(
+		 .clk_50MHz(clk),
+		 .primary_current_adc_timed_out(primary_current_adc_timed_out),
+		 .first_stage_voltage_adc_timed_out(first_stage_voltage_adc_timed_out),
+		 .output_voltage_adc_timed_out(output_voltage_adc_timed_out),
+		 .error(error),
+		 .in_error(in_error),
+		 .clear_error(clear_error)
+	);
     // Instantiate the module
     HVPS_FPGAInterface fpga_interface (
 		  .clk(clk),
@@ -94,6 +110,7 @@ module hvps_controller(
         .go_live(ESP_GO_LIVE),
         .desired_output_voltage(desired_output_voltage),
         .command(command),
+		  .input_data(input_data),
         .state(state),
         .buffered_data(buffered_data),
         .actual_first_stage_voltage(first_stage_voltage_raw),
@@ -102,7 +119,8 @@ module hvps_controller(
         .max_first_stage_voltage(MAX_FIRST_STAGE_VOLTAGE),
         .max_output_voltage(MAX_OUTPUT_VOLTAGE),
         .max_primary_current(MAX_PRIMARY_CURRENT),
-        .echo_desired_output_voltage(desired_output_voltage)
+        .echo_desired_output_voltage(desired_output_voltage),
+		  .error(error)
     );
 	 
 	 
@@ -121,7 +139,8 @@ module hvps_controller(
 		 .INV_RD(U12_INV_RD),
 		 .data(primary_current_raw),
 		 .new_value(new_primary_current),
-		 .adc_lag(new_primary_current_lag)
+		 .adc_lag(new_primary_current_lag),
+		 .timed_out(primary_current_adc_timed_out)
 	  );
 	 AD7822 output_voltage_feedback_adc(
 		 .clk_50MHz(clk),
@@ -137,7 +156,8 @@ module hvps_controller(
 		 .INV_EOC(U5_INV_EOC),
 		 .INV_RD(U5_INV_RD),
 		 .data(output_voltage_raw),
-		 .new_value(new_output_voltage)
+		 .new_value(new_output_voltage),
+		 .timed_out(output_voltage_adc_timed_out)
 	  );
 	 AD7822 first_stage_voltage_feedback_adc(
 		 .clk_50MHz(clk),
@@ -153,7 +173,8 @@ module hvps_controller(
 		 .INV_EOC(U20_INV_EOC),
 		 .INV_RD(U20_INV_RD),
 		 .data(first_stage_voltage_raw),
-		 .new_value(new_first_stage_voltage)
+		 .new_value(new_first_stage_voltage),
+		 .timed_out(first_stage_voltage_adc_timed_out)
 	  );
 	  BangBangController bang_bang_controller(
 		 .clk(clk),
@@ -161,7 +182,8 @@ module hvps_controller(
 		 .first_stage_voltage_raw(first_stage_voltage_raw),
 		 .output_voltage_raw(output_voltage_raw),
 		 .desired_output_voltage(desired_output_voltage),
-		 .can_drive(can_drive)
+		 .can_drive(can_drive),
+		 .in_error(in_error)
 	  );
 	  CaptureBuffers capture_buffers(
 		 .clk_50Mhz(clk),
@@ -176,13 +198,15 @@ module hvps_controller(
 	  CommandHandler command_handler(
 			.clk_50Mhz(clk),
 			.command(command),
+			.input_data(input_data),
 			.state(state),
 			.drive_mode(drive_mode),
 			.shut_down_h_bridge(shut_down_h_bridge),
 			.n_quarter_cycles_to_drive(n_quarter_cycles_to_drive),
 			.done_finite_quarter_cycles(done_finite_quarter_cycles),
 			.next_data_out(next_data_out),
-			.next_data_ready(next_data_ready)
+			.next_data_ready(next_data_ready),
+			.clear_error(clear_error)
 	  );
 	  HBridge hBridge(
 		 .clk(clk),           // 50MHz system clock

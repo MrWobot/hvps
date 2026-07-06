@@ -75,7 +75,7 @@ void PowerConditioningMonitor::updateReady(bool value){
 	Outputs::setSoftStartResistorBypassOnOff(value);
 }
 bool PowerConditioningMonitor::canTalk(){	
-	uint64_t now = TimeHelper::ms();
+	int64_t now = TimeHelper::ms();
 	if(now>_talkNext){
 		_talkNext = now+TALK_INTERVAL_MILLISECONDS;
 		return true;

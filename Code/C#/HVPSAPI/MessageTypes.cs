@@ -27,5 +27,6 @@ namespace HVPSAPI
         public const string SampleFullCycle = "sfcm";
         public const string CalculateInductance = "cim";
         public const string OpenImageMessage = "oim";
+        public const string RunNCycles = "rnc";
     }
 }

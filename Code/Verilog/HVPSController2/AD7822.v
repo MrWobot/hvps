@@ -14,7 +14,8 @@ module AD7822(
     output reg [7:0] data,
     output reg [7:0] data2,
 	 output reg new_value,
-	 output reg [5:0] adc_lag
+	 output reg [5:0] adc_lag,
+	 output reg timed_out
 );
 
 // At 50MHz, 1 clock = 20ns
@@ -36,10 +37,12 @@ initial begin
     INV_RD     = 1;
     data       = 8'b00001111;
     data2       = 8'b00001111;
+	 timed_out = 0;
 end
 
 always @(posedge clk_50MHz) begin
 	 new_value <=0;
+	 timed_out <= 0;
     case (state)
         IDLE: begin
             INV_CONVST <= 0; // falling edge starts conversion
@@ -60,6 +63,7 @@ always @(posedge clk_50MHz) begin
 					  // EOC never came, retry
 					  counter <= 0;
 					  state   <= IDLE; // go back and try again
+					  timed_out <= 1;
 				 end else begin
 					  counter <= counter + 5'd1;
 				 end

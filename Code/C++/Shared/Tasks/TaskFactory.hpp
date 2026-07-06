@@ -119,7 +119,7 @@ private:
                                  const std::function<void()>& fn,
 								 const char* name,
                                  size_t stackSize,
-                                 int priority,
+                                 uint32_t priority,
                                  int core,
                                  TaskHandle_t* taskHandle);
 };

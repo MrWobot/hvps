@@ -25,7 +25,8 @@ import {
 	SampleHalfCycleMessage,
 	SampleFullCycleMessage,
 	CalculateInductanceMessage,
-	SampleDataMessage
+	SampleDataMessage,
+	RunNCyclesMessage
 } from '../generated/messages';
 class HVPSUIAPI{
 	static shutDown(){
@@ -48,6 +49,10 @@ class HVPSUIAPI{
 	}
 	static calculateInductance(){
 		NativeAPI.send(CalculateInductanceMessage.toJSON());
+	}
+	static runNCycles({nCycles}){
+		console.log(RunNCyclesMessage.toJSON({nCycles}));
+		NativeAPI.send(RunNCyclesMessage.toJSON({nCycles}));
 	}
 	static getAvailableBluetoothDevices(){
 		return NativeAPI.ticketedSend(GetAvailableBluetoothDevicesRequest.toJSON(), 30000)

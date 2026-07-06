@@ -58,7 +58,7 @@ size_t SoftwareUART::writeBytes(const char* src, size_t len) {
         for (int bit = 0; bit < 8; bit++) {
             int bitval = (b >> bit) & 1;
             bitval ^= _invertTx;  // invert if needed
-            gpio_set_level(_txGPIONum, bitval);
+            gpio_set_level(_txGPIONum, static_cast<uint32_t>(bitval));
             ets_delay_us(static_cast<uint32_t>(_bitPeriodUs));
         }
 

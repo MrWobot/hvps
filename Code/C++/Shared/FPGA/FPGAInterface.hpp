@@ -12,8 +12,8 @@
 class FPGAInterface:public SingletonBase<FPGAInterface>
 {
 private:
-    static constexpr uint64_t MINIMUM_UPDATE_PERIOD_MS = 50;
-	static constexpr uint64_t MAX_SLEEP = static_cast<uint64_t>(std::numeric_limits<uint32_t>::max());
+    static constexpr int64_t MINIMUM_UPDATE_PERIOD_MS = 50;
+	static constexpr int64_t MAX_SLEEP = static_cast<int64_t>(std::numeric_limits<uint32_t>::max());
     size_t _inputsLength;
     size_t _outputsLength;
 	size_t _fullOutputBufferLength;
@@ -62,5 +62,5 @@ private:
     void sleep();
     void startLooping();
     void loop();
-    void doLoopSleep(uint64_t& startTime);
+    void doLoopSleep(int64_t& startTime);
 };

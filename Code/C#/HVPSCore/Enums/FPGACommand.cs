@@ -7,5 +7,7 @@
         SampleHalfCycle = 2,
         SampleFullCycle = 3,
         ReadNextDataBytes = 4,
+        RunNCycles = 5,
+        ClearError = 6
     }
 }

@@ -16,7 +16,7 @@ class PowerConditioningMonitor:public SingletonBase<PowerConditioningMonitor>{
 		const HVPSConfiguration& _config1;
 		const HVPSConfiguration& _config2;
 		size_t _index;
-		uint64_t _talkNext;
+		int64_t _talkNext;
 		std::atomic<bool> _ready;
 		float _voltages[WINDOW_SAMPLES];
 	protected:

@@ -8,6 +8,7 @@
 #include "SystemChecks.hpp"
 #include "Macros/GetFileName.hpp"
 #include "Generated/Enums/FPGACommand.hpp"
+#include "Generated/Enums/FPGAError.hpp"
 #include "Enums/SampleType.hpp"
 #include "ADC/ADC.hpp"
 #include "Sampling.hpp"
@@ -44,13 +45,13 @@ _peakCurrentSenseVoltageRaw(0)
 }
 float HighSpeedCore::getFrequencyHz(ValueBoundType& valueBoundType){
 	uint64_t nCyclesCount = _nCyclesCount;
-	uint64_t startLiveTimeUs = _startLiveTimeUs;
-	uint64_t nowUs = TimeHelper::us();
+	int64_t startLiveTimeUs = _startLiveTimeUs;
+	int64_t nowUs = TimeHelper::us();
 	if(startLiveTimeUs==0){
 		valueBoundType = ValueBoundType::Unknown;
 		return 0;
 	}
-	uint64_t dtUs = nowUs - startLiveTimeUs;
+	int64_t dtUs = nowUs - startLiveTimeUs;
 	if(dtUs==0){
 		valueBoundType = ValueBoundType::Unknown;
 		return 0;
@@ -129,6 +130,14 @@ void HighSpeedCore::sampleFullCycle(){
 void HighSpeedCore::calculateInductance(){
 	setDesiredSystemState(SystemState::CalculatingInductance);
 }
+void HighSpeedCore::runNCycles(uint8_t nCycles){
+	_runNCycles_nCycles.store(nCycles, std::memory_order_relaxed);
+	setDesiredSystemState(SystemState::RunningNCycles);
+}
+void HighSpeedCore::clearError(){
+	setInError(false);
+	setDesiredSystemState(SystemState::ClearingFPGAError);
+}
 bool HighSpeedCore::getInError(){
 	return _inError.load(std::memory_order_relaxed);
 }
@@ -199,6 +208,7 @@ void HighSpeedCore::_run(){
 			doShutDown();
 			continue;
 		}
+		reportFPGAErrorIfHas();
 		switch(getDesiredSystemState()){
 			case SystemState::Idle:
 				LOG_INFO("Idle");
@@ -229,16 +239,49 @@ void HighSpeedCore::_run(){
 				LOG_INFO("Calculating Inductance");
 				doCalculatingInductance();
 				continue;
+			case SystemState::RunningNCycles:
+				LOG_INFO("Run N Cycles");
+				doRunNCycles();
+				continue;
 			case SystemState::Error:
 				LOG_INFO("Error");
 				doError();
 				continue;
+			case SystemState::ClearingFPGAError:
+				LOG_INFO("Clearing FPGA Error");
+				doClearFPGAError();
+				continue;
 			default:
 				SAFE_ABORT("Illegal state");
 				break;
-				
 		}
 	}
+}
+void HighSpeedCore::reportFPGAErrorIfHas(){	
+	uint8_t error = _fpgaInterface.getError();
+	if(error==static_cast<uint8_t>(FPGAError::NONE))return;	
+	setInError(true);
+	dispatchMessage("FPGA Error");
+	std::string errorMessage = "Error code: " + std::to_string(static_cast<int>(error));
+	dispatchError(errorMessage);
+}
+void HighSpeedCore::doClearFPGAError(){
+	_fpgaInterface.setCommand(static_cast<uint8_t>(FPGACommand::CLEAR_ERROR));
+	size_t n = 0;
+	while(true){
+		Delay::ms(100);
+		uint8_t error = _fpgaInterface.getError();
+		if(error==static_cast<uint8_t>(FPGAError::NONE)){
+			dispatchMessage("Cleared errors!");
+			break;
+		}
+		if(n++>=30)
+		{
+			dispatchError("Failed to clear FPGA error");
+			break;
+		}
+	}
+	setDesiredSystemState(SystemState::Idle);
 }
 void HighSpeedCore::doRunningSystemChecks(){
 	setDesiredSystemState(doSystemChecks()->getSuccess()?SystemState::Idle:SystemState::Error);
@@ -277,6 +320,23 @@ void HighSpeedCore::doSamplingFullCycle(){
 }
 void HighSpeedCore::doCalculatingInductance(){
 	
+}
+void HighSpeedCore::doRunNCycles(){
+	setActualSystemState(SystemState::RunningNCycles);
+	std::string errorMessage;
+	std::unique_ptr<uint8_t[]> sampleBytes;
+	size_t nSampleBytes;
+	if(!Sampling::runNCycles(_fpgaInterface, _runNCycles_nCycles.load(std::memory_order_relaxed), 
+		errorMessage, sampleBytes, nSampleBytes)){
+		setInError(true);
+		dispatchMessage("Failed to sample full cycle :(");
+		dispatchError(errorMessage);	
+		return;
+	}
+	dispatchMessage("Finished running n cycle!");
+	SampleDataMessage sampleDataMessage(sampleBytes.release(), nSampleBytes, static_cast<uint32_t>(SampleType::FullCycle));
+	dispatchSampleDataMessage(sampleDataMessage);
+	setDesiredSystemState(SystemState::Idle);
 }
 std::shared_ptr<SystemChecksResult> HighSpeedCore::doSystemChecks(){
 	dispatchMessage("Running system checks!");

@@ -11,7 +11,7 @@ private:
     dac_oneshot_handle_t _ch1;
 public:
 	static const char* getTag();
-    static inline constexpr float DEFUALT_V_MAX = 3.1;
+    static inline constexpr float DEFUALT_V_MAX = 3.1f;
     DISALLOW_COPY_MOVE(DAC);
 	
 	void setChannel0Voltage(float voltage, float vMax = DEFUALT_V_MAX);

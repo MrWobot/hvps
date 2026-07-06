@@ -93,6 +93,7 @@ idf_component_register(
 	"Generated/Messages/SampleHalfCycleMessage.cpp"
 	"Generated/Messages/SampleFullCycleMessage.cpp"
 	"Generated/Messages/CalculateInductanceMessage.cpp"
+	"Generated/Messages/RunNCyclesMessage.cpp"
 	"Graphics/DisplayBuffer.cpp"
 	"Graphics/PixelHelper.cpp"
 	"Structs/VoltageWithRaw.cpp"
@@ -119,4 +120,5 @@ target_compile_options(${COMPONENT_LIB} PRIVATE
     -Werror=narrowing
 	-Wnull-dereference
 	-Werror=null-dereference
+	-Wunused-variable
 )

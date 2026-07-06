@@ -31,6 +31,24 @@ bool Sampling::sampleFullCycle(HVPS_FPGAInterface& fpgaInterface, std::string& e
 	}
 	return true;
 }
+bool Sampling::runNCycles(
+	HVPS_FPGAInterface& fpgaInterface, 
+	uint8_t nCycles,
+	std::string& errorMessage, 
+	std::unique_ptr<uint8_t[]>& sampleBytes,
+	size_t& sampleBytesLength
+){
+	setInputData(fpgaInterface, nCycles);
+	setCommand(fpgaInterface, FPGACommand::RUN_N_CYCLES);
+	if(!waitForState(fpgaInterface, FPGAState::RAN_N_CYCLES)){
+		errorMessage = "Failed to receive RAN_N_CYCLES";
+		return false;
+	}
+	if(!readSampleBytes(fpgaInterface, errorMessage, sampleBytes, sampleBytesLength)){
+		return false;
+	}
+	return true;
+}
 bool Sampling::calculateInductance(HVPS_FPGAInterface& fpgaInterface, std::string& errorMessage,
 	float& inductanceHenries){
 	return false;
@@ -86,10 +104,10 @@ bool Sampling::readNextBytes(HVPS_FPGAInterface& fpgaInterface, uint8_t (&buffer
 	fpgaInterface.getBufferedData(buffered_data);
 	return true;
 }
-bool Sampling::waitForState(HVPS_FPGAInterface& fpgaInterface, FPGAState state, uint64_t timeoutMs /* = DEFAULT_WAIT_FOR_STATE_TIMEOUT_MS*/)
+bool Sampling::waitForState(HVPS_FPGAInterface& fpgaInterface, FPGAState state, int64_t timeoutMs /* = DEFAULT_WAIT_FOR_STATE_TIMEOUT_MS*/)
 {
 	uint8_t desiredState = static_cast<uint8_t>(state);
-	uint64_t timeoutAtMs = TimeHelper::ms()+ timeoutMs;
+	int64_t timeoutAtMs = TimeHelper::ms()+ timeoutMs;
 	while(true){
 		uint8_t actualState = fpgaInterface.getState();
 		LOG_INFO("Actual state was: %" PRIu8, actualState);
@@ -105,4 +123,8 @@ bool Sampling::waitForState(HVPS_FPGAInterface& fpgaInterface, FPGAState state, 
 void Sampling::setCommand(HVPS_FPGAInterface& fpgaInterface, FPGACommand command)
 {
 	fpgaInterface.setCommand(static_cast<uint8_t>(command));
+}
+void Sampling::setInputData(HVPS_FPGAInterface& fpgaInterface, uint8_t nCycles){
+	
+	fpgaInterface.setInputData(nCycles);
 }

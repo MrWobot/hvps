@@ -12,6 +12,9 @@
 #include "Logging/Log.hpp"
 
 class JHelper {
+private:
+	static constexpr int64_t MAX_NUM = (1LL << 53);
+	static constexpr int64_t MIN_NUM = -(1LL << 53);
 public:
 
 	static std::shared_ptr<cJSON> toSharedPtr(cJSON* raw);

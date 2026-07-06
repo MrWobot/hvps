@@ -1,3 +1,8 @@
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#pragma GCC diagnostic ignored "-Wfloat-conversion"
+#pragma GCC diagnostic ignored "-Wdouble-promotion"
 /*
  * Copyright (c) 2016 Jonathan Hartsuiker <https://github.com/jsuiker>
  * Copyright (c) 2018 Ruslan V. Uss <unclerus@gmail.com>

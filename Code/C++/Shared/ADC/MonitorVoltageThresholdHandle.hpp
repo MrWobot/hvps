@@ -13,7 +13,7 @@ private:
     // Thread-safe current voltage (atomic)
     std::atomic<uint16_t> _currentVoltageRaw;
     // Raw ADC threshold (12-bit). Thread-safe.
-    std::atomic<uint32_t> _rawThreshold;
+    std::atomic<uint16_t> _rawThreshold;
 
 public:
 

@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using HVPSConstants;
 using ConfigurationClassBuilder;
 using FPGAConstantsGenerator;
@@ -19,25 +18,32 @@ namespace HVPSConfigurationGenerator
             {
                 reposDirectory = Directory.GetParent(reposDirectory)!.FullName;
             }
-            Constants4K constants = new Constants4K();
+            Constants4kV constants = new Constants4kV();
+            GenerateJavaScriptConfigurations(reposDirectory, constants);
+            GenerateCPlusPlusConfigurations(reposDirectory, constants);
+            GenerateFPGAConstants(reposDirectory, constants);
+        }
+        private static void GenerateCPlusPlusConfigurations(string reposDirectory, 
+            Constants constants) {
+
             HVPSConfigurationForMicrocontroller configurationStruct = new HVPSConfigurationForMicrocontroller
             (
                 maxOutputVoltageVolts: constants.MaxOutputVoltageVolts,
                 defaultOutputVoltageVolts: constants.MaxOutputVoltageVolts,
-                minOutputVoltageVolts:constants.MinOutputVoltageVolts,
-                pingTimeoutMilliseconds: constants.PingTimeoutMilliseconds,
-                sendPingIntervalMilliseconds: constants.SendPingIntervalMilliseconds,
+                minOutputVoltageVolts: constants.MinOutputVoltageVolts,
+                pingTimeoutMilliseconds: Constants.PingTimeoutMilliseconds,
+                sendPingIntervalMilliseconds: Constants.SendPingIntervalMilliseconds,
                 vPsOverVadcRatio: constants.PowerSupplyVoltageFeedbackPotentialDividerRatio,
                 villardCapacitorsBleedTimeConstantSeconds: constants.VillardCapacitorsBleedTimeConstantSeconds,
-                   /* (uint)Math.Ceiling(
-                        (1d + (Constants.VillardCapacitorTolerancePercent / 100d))
-                        * Constants.VillardCapacitorCapacitance
-                        * (1d + (Constants.VillardCapacitorBleedResistorTolerancePercent / 100d))
-                        * Constants.VillardCapacitorBleedResistance),*/
+                /* (uint)Math.Ceiling(
+                     (1d + (Constants.VillardCapacitorTolerancePercent / 100d))
+                     * Constants.VillardCapacitorCapacitance
+                     * (1d + (Constants.VillardCapacitorBleedResistorTolerancePercent / 100d))
+                     * Constants.VillardCapacitorBleedResistance),*/
                 primaryCurrentFromRaw: constants.PrimaryCurrentFromRaw,
                 firstStageVoltageFromRaw: constants.FirstStageVoltageFromRaw,
                 outputVoltageFromRaw: constants.OutputVoltageFromRaw,
-                maxTemperatureMosfetDegreesC: constants.MaxTemperatureMosfetDegreesC,
+                maxTemperatureMosfetDegreesC: constants.MaxMosfetTemperatureDegreesC,
 
                 errorColour: constants.ErrorColour.ToUInt32(),
                 liveColour: constants.LiveColour.ToUInt32(),
@@ -62,12 +68,7 @@ namespace HVPSConfigurationGenerator
                 unknownFlashDelayMs: FlashHzToMilliseconds(
                     constants.UnknownFlashHz)
             );
-            GenerateJavaScriptConfigurations(reposDirectory, configurationStruct);
-            GenerateCPlusPlusConfigurations(reposDirectory, configurationStruct);
-            GenerateFPGAConstants(reposDirectory, constants);
-        }
-        private static void GenerateCPlusPlusConfigurations(string reposDirectory, 
-            HVPSConfigurationForMicrocontroller configurationStruct) {
+
             string dependenciesIncludePathPrefix = "";
             AlreadyWroteWatcher alreadyWroteWatcher = new AlreadyWroteWatcher();
             CPlusPlusConfigurationWriter.WriteConfigurationStructFile<HVPSConfigurationForMicrocontroller>(
@@ -126,8 +127,20 @@ namespace HVPSConfigurationGenerator
                         "Enums"
                 )
             );
+            CPlusPlusEnumWriter.Write<FPGAError>(
+                Path.Combine(
+                        reposDirectory,
+                        "hvps",
+                        "Code",
+                        "C++",
+                        "HVPSController2",
+                        "main",
+                        "Generated",
+                        "Enums"
+                )
+            );
         }
-        private static void GenerateFPGAConstants(string reposDirectory, Constants4K constants) {
+        private static void GenerateFPGAConstants(string reposDirectory, Constants4kV constants) {
             float maximumCurrentRampRate =
                 (constants.MaxSupplyVoltage / constants.TransformerLeakageInductance);
             float maximumCurrentGainBetweenADCReading = maximumCurrentRampRate * constants.MaxADCConversionTime;
@@ -159,11 +172,16 @@ namespace HVPSConfigurationGenerator
                 }
                 .Concat(FPGAConstantsGenerator.ConstantsFactory.FromEnum<FPGACommand>(8))
                 .Concat(FPGAConstantsGenerator.ConstantsFactory.FromEnum<FPGAState>(8))
+                .Concat(FPGAConstantsGenerator.ConstantsFactory.FromEnum<FPGAError>(8))
                 .ToArray()
             );
         }
-        private static void GenerateJavaScriptConfigurations(string reposDirectory, HVPSConfigurationForMicrocontroller configuration) {
+        private static void GenerateJavaScriptConfigurations(string reposDirectory, Constants constants) {
             AlreadyWroteWatcher alreadyWroteWatcher = new AlreadyWroteWatcher();
+            HVPSConfigurationForUI configuration = new HVPSConfigurationForUI(
+                firstStageVoltageFromRaw:constants.FirstStageVoltageFromRaw,
+                outputVoltageFromRaw:constants.OutputVoltageFromRaw,
+                primaryCurrentFromRaw:constants.PrimaryCurrentFromRaw);
             JavaScriptConfigurationWriter.Write(Path.Combine(
                     reposDirectory,
                     "hvps",
@@ -172,9 +190,22 @@ namespace HVPSConfigurationGenerator
                     "client",
                     "src",
                     "generated",
-                    "HVPSConfigurationForMicrocontroller.js"
-            ), configuration, alreadyWroteWatcher);
+                    "HVPSConfiguration.js"
+            ), configuration, alreadyWroteWatcher,
+                writtenStructName: "HVPSConfiguration");
             JavaScriptEnumWriter.Write<SampleType>(
+                Path.Combine(
+                        reposDirectory,
+                        "hvps",
+                        "Code",
+                        "JavaScript",
+                        "client",
+                        "src",
+                        "generated",
+                        "enums"
+                )
+            );
+            JavaScriptEnumWriter.Write<FPGAError>(
                 Path.Combine(
                         reposDirectory,
                         "hvps",

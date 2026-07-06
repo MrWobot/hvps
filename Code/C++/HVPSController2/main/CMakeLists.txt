@@ -38,4 +38,5 @@ target_compile_options(${COMPONENT_LIB} PRIVATE
     -Werror=narrowing
 	-Wnull-dereference
 	-Werror=null-dereference
+	-Wunused-variable
 )

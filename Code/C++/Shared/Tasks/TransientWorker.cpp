@@ -67,12 +67,12 @@ void TransientWorker::runTask(std::shared_ptr<TransientWorker> selfPtr) {
 
 void TransientWorker::taskLoop() {
 	Job* jobPtr = nullptr;
-	uint64_t startTimeUs = TimeHelper::us();
+	int64_t startTimeUs = TimeHelper::us();
 	while(true) {
 		if (xQueueReceive(_queue, &jobPtr, _idleTicks) == pdTRUE) {
 			std::unique_ptr<Job> job(jobPtr);
 			(*job)();
-			uint64_t endTimeUs = TimeHelper::us();
+			int64_t endTimeUs = TimeHelper::us();
 			if(endTimeUs - startTimeUs > _maxDesiredJobTimeUs){
 				LOG_WARN("Warning, a task caused a delay greater than max allowed job time: %" PRIu64 " us", _maxDesiredJobTimeUs);
 			}

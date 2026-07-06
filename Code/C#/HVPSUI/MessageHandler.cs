@@ -24,8 +24,8 @@ namespace HVPSUI
             _PingDisconnectDetector = new PingDisconnectDetector(
                 _DeviceRegistrationMessageHandler,
                 DeviceDisconnected,
-                HVPSConstants.Constants.PingTimeoutMilliseconds,
-                HVPSConstants.Constants.SendPingIntervalMilliseconds
+                (int)HVPSConstants.Constants.PingTimeoutMilliseconds,
+                (int)HVPSConstants.Constants.SendPingIntervalMilliseconds
             );
             _WebViewMessagingInterface.OnMessage += HandleMessageFromJavaScript;
             _WebViewMessagingInterface.RegisterMethod<
@@ -66,6 +66,10 @@ namespace HVPSUI
             _WebViewMessagingInterface.RegisterMethod<
                 CalculateInductanceMessage>(
                 HVPSAPI.MessageTypes.CalculateInductance,
+                SendToBluetoothDevice);
+            _WebViewMessagingInterface.RegisterMethod<
+                RunNCyclesMessage>(
+                HVPSAPI.MessageTypes.RunNCycles,
                 SendToBluetoothDevice);
             _DeviceRegistrationMessageHandler.RegisterMethod<
                 ConsoleMessage>(

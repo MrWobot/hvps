@@ -356,12 +356,12 @@ void FPGAInterface::loop()
 	bool* temporaryFullOutputBuffer = new bool[_fullOutputBufferLength]();
     while (true)
     {
-		uint64_t startTime = TimeHelper::ms();
+		int64_t startTime = static_cast<int64_t>(TimeHelper::ms());
 		if (_disposed.load()) {
 			_taskFinished = true;
 			return;
 		}
-		uint64_t timeUs = TimeHelper::us();
+		uint64_t timeUs = static_cast<uint64_t>(TimeHelper::us());
 		_lockInputBuffer.lock();
 		if (!_inputsChanged)
 		{
@@ -397,15 +397,16 @@ void FPGAInterface::loop()
     }
 }
 
-void FPGAInterface::doLoopSleep(uint64_t& startTime)
+void FPGAInterface::doLoopSleep(int64_t& startTime)
 {
-    uint64_t now = TimeHelper::ms();
-    uint64_t elapsed = now - startTime;
+    int64_t now = TimeHelper::ms();
+    int64_t elapsed = now - startTime;
     startTime = now;
-    uint64_t toSleep = MINIMUM_UPDATE_PERIOD_MS - elapsed;
+    int64_t toSleep = MINIMUM_UPDATE_PERIOD_MS - elapsed;
 	if (toSleep > MAX_SLEEP) {
 		toSleep = MAX_SLEEP;
 	}
-    if (toSleep > 0)
+    if (toSleep > 0){
         Delay::ms(static_cast<uint32_t>(toSleep));
+	}
 }
