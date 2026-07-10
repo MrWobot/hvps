@@ -10,12 +10,16 @@ module CommandHandler(
 	output reg next_data_out,
 	input wire next_data_ready,
 	output reg clear_error,
-	output reg test
+	output reg test,
+	output reg[11:0]captures_buffer_divider_count
 );
 initial begin
 	test <=0;
+	captures_buffer_divider_count<=12'd20;
 end
 reg [7:0] last_command = 8'b00000000;
+wire[5:0] n_quarter_cycles_from_input_data;
+assign n_quarter_cycles_from_input_data = ((input_data[5:0] > 6'd10) ? 6'd10 : input_data[5:0]) << 2;
 always @(posedge clk_50Mhz) begin
 	last_command <= command;
 	next_data_out<=0;
@@ -50,6 +54,7 @@ always @(posedge clk_50Mhz) begin
 			end
 			else begin
 				n_quarter_cycles_to_drive<=8'b0010;
+				captures_buffer_divider_count<=CAPTURE_BUFFERS_FASTEST_SAMPLE_RATE_DIVIDER_COUNT;
 				drive_mode<=DRIVE_MODE_DRIVE_FINITE_QUARTER_CYCLES;
 				shut_down_h_bridge <= 0;
 				state <= FPGA_STATE_SAMPLING_HALF_CYCLE;
@@ -67,6 +72,7 @@ always @(posedge clk_50Mhz) begin
 			end
 			else begin
 				n_quarter_cycles_to_drive<=8'b0100;
+				captures_buffer_divider_count<=CAPTURE_BUFFERS_FASTEST_SAMPLE_RATE_DIVIDER_COUNT;
 				drive_mode<=DRIVE_MODE_DRIVE_FINITE_QUARTER_CYCLES;
 				shut_down_h_bridge <= 0;
 				state <= FPGA_STATE_SAMPLING_FULL_CYCLE;
@@ -78,13 +84,23 @@ always @(posedge clk_50Mhz) begin
 					drive_mode<=DRIVE_MODE_NO_DRIVE;
 					shut_down_h_bridge <= 1;
 					state <= FPGA_STATE_RAN_N_CYCLES;
-					test <= 1;
 				end
 				else begin
 				end
 			end
 			else begin
-				n_quarter_cycles_to_drive<=8'd8;//input_data[3:0];
+				if(input_data[5:0]==6'd1)begin
+					test<=1;
+				end
+				n_quarter_cycles_to_drive <= n_quarter_cycles_from_input_data;
+				captures_buffer_divider_count <= 
+						((CAPTURE_BUFFERS_N_RUN_CYCLES_TO_N_CLOCK_CYCLES_DIVIDER * input_data[7:0]) < CAPTURE_BUFFERS_FASTEST_SAMPLE_RATE_DIVIDER_COUNT)   
+						? CAPTURE_BUFFERS_FASTEST_SAMPLE_RATE_DIVIDER_COUNT   
+						:(
+							((CAPTURE_BUFFERS_N_RUN_CYCLES_TO_N_CLOCK_CYCLES_DIVIDER * input_data[7:0]) > CAPTURE_BUFFERS_SLOWEST_SAMPLE_RATE_DIVIDER_COUNT) 
+							? CAPTURE_BUFFERS_SLOWEST_SAMPLE_RATE_DIVIDER_COUNT 
+							:(CAPTURE_BUFFERS_N_RUN_CYCLES_TO_N_CLOCK_CYCLES_DIVIDER * input_data[7:0])
+						);
 				drive_mode<=DRIVE_MODE_DRIVE_FINITE_QUARTER_CYCLES;
 				shut_down_h_bridge <= 0;
 				state <= FPGA_STATE_RUNNING_N_CYCLES;

@@ -23,7 +23,7 @@ namespace HVPSConfigurationGenerator
             GenerateCPlusPlusConfigurations(reposDirectory, constants);
             GenerateFPGAConstants(reposDirectory, constants);
         }
-        private static void GenerateCPlusPlusConfigurations(string reposDirectory, 
+        private static void GenerateCPlusPlusConfigurations(string reposDirectory,
             Constants constants) {
 
             HVPSConfigurationForMicrocontroller configurationStruct = new HVPSConfigurationForMicrocontroller
@@ -103,7 +103,7 @@ namespace HVPSConfigurationGenerator
                     structHppFileRelativePath: "HVPSConfiguration.hpp",
                     dependenciesIncludePathPrefix,
                     alreadyWroteWatcher,
-                    writtenStructName:"HVPSConfiguration"
+                    writtenStructName: "HVPSConfiguration"
                 );
             }
             CPlusPlusEnumWriter.Write<FPGACommand>(
@@ -144,14 +144,25 @@ namespace HVPSConfigurationGenerator
             );
         }
         private static void GenerateFPGAConstants(string reposDirectory, Constants4kV constants) {
-            float maximumCurrentRampRate =
-                (constants.MaxSupplyVoltage / constants.TransformerLeakageInductance);
-            float maximumCurrentGainBetweenADCReading = maximumCurrentRampRate * constants.MaxADCConversionTime;
-            int maxPrimaryCurrentRaw = 
-                (int)Math.Floor((constants.MaxPrimaryCurrent - (maximumCurrentGainBetweenADCReading))
+
+            int maxPrimaryCurrentRaw =
+                (int)Math.Floor(constants.MaxPrimaryCurrentFactoringInADCConversionTime
                 / constants.PrimaryCurrentFromRaw);
             int maxFirstStageVoltageRaw = (int)Math.Floor(constants.MaxFirstStageVoltage / constants.FirstStageVoltageFromRaw);
             int maxOutputVoltageRaw = (int)Math.Floor(constants.MaxOutputVoltageVolts / constants.OutputVoltageFromRaw);
+            double nCaptureBufferBytesPerVariable = constants.FpgaCaptureBuffersLengthBytes / 3d;
+            int runNCyclesMaxValue = 255;
+            double nRunCyclesToNClockCyclesDivider = ((double)constants.FPGAClockHz) /
+                (((double)constants.FrequencyHz) * nCaptureBufferBytesPerVariable);
+            double nClockCyclesAtMaximumRunTimeForRunNCycles = ((double)runNCyclesMaxValue) * nRunCyclesToNClockCyclesDivider;
+            int nClockCyclesPerSampleForMaximumRumTimeForRunNCycles = (int)Math.Ceiling(nClockCyclesAtMaximumRunTimeForRunNCycles);
+            if (nClockCyclesPerSampleForMaximumRumTimeForRunNCycles < constants.FpgaCaptureBuffersFastestSampleRateDividerCount) {
+                nClockCyclesPerSampleForMaximumRumTimeForRunNCycles = constants.FpgaCaptureBuffersFastestSampleRateDividerCount;
+            }
+            int nRunCyclesToNClockCyclesDividerInt = (int)Math.Floor(nRunCyclesToNClockCyclesDivider);
+            if (nRunCyclesToNClockCyclesDividerInt != 12) {
+                throw new Exception("The multiplication done in verilog in CommandHandler for runNCycles may need re-evaluating for efficiency");
+            }
             FPGAConstantsGenerator.ConstantsGenerator.Generate(Path.Combine(
                         reposDirectory,
                         "hvps",
@@ -164,14 +175,20 @@ namespace HVPSConfigurationGenerator
                     new Constant(name: "MAX_PRIMARY_CURRENT", value: maxPrimaryCurrentRaw, Format.Decimal, nBits: 8),
                     new Constant(name: "MAX_FIRST_STAGE_VOLTAGE", value: maxFirstStageVoltageRaw, Format.Decimal, nBits: 8),
                     new Constant(name: "MAX_OUTPUT_VOLTAGE", value: maxOutputVoltageRaw, Format.Decimal, nBits: 8),
-                    new Constant(name: "INTERFACE_BUFFERED_DATA_LAST_INDEX", 
+                    new Constant(name: "INTERFACE_BUFFERED_DATA_LAST_INDEX",
                         value: (constants.FpgaInterfaceBufferedDataLength*8)-1, Format.RawInteger),
                     new Constant(name: "INTERFACE_BUFFERED_DATA_LENGTH_BYTES_10BITS",
                         value: constants.FpgaInterfaceBufferedDataLength, Format.Decimal, nBits:10),
                     new Constant(name: "CAPTURE_BUFFERS_RAM_LENGTH_BYTES",
                         value: constants.FpgaCaptureBuffersLengthBytes, Format.RawInteger),
                     new Constant(name: "CAPTURE_BUFFERS_RAM_LAST_INDEX",
-                        value: constants.FpgaCaptureBuffersLengthBytes - 1, Format.RawInteger)
+                        value: constants.FpgaCaptureBuffersLengthBytes - 1, Format.RawInteger),
+                    new Constant(name: "CAPTURE_BUFFERS_FASTEST_SAMPLE_RATE_DIVIDER_COUNT",
+                        value: constants.FpgaCaptureBuffersFastestSampleRateDividerCount, Format.Decimal, nBits:12),
+                    new Constant(name: "CAPTURE_BUFFERS_SLOWEST_SAMPLE_RATE_DIVIDER_COUNT",
+                        value:nClockCyclesPerSampleForMaximumRumTimeForRunNCycles, Format.Decimal, nBits:12),
+                    new Constant(name: "CAPTURE_BUFFERS_N_RUN_CYCLES_TO_N_CLOCK_CYCLES_DIVIDER",
+                        value:nRunCyclesToNClockCyclesDividerInt, Format.Decimal, nBits:12)
                 }
                 .Concat(FPGAConstantsGenerator.ConstantsFactory.FromEnum<FPGACommand>(8))
                 .Concat(FPGAConstantsGenerator.ConstantsFactory.FromEnum<FPGAState>(8))

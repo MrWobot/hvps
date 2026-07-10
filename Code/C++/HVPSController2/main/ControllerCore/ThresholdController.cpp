@@ -1,5 +1,6 @@
 #include "ThresholdController.hpp"
 #include "Macros/GetFileName.hpp"
+#include "Logging/Log.hpp"
 #include "Storage/Flash.hpp"
 const char* FLASH_NAMESPACE = "ThresholdController";
 const char* DESIRED_OUTPUT_VOLTAGE = "DOVoltage";
@@ -20,10 +21,12 @@ ThresholdController::ThresholdController(
 		currentValue = _hvpsConfiguration1.defaultOutputVoltageVolts;
 	}
 	_desiredOutputVoltage = currentValue;
+	LOG_INFO("Set threshold voltage as %d ", currentValue);
 	_fpgaInterface.setDesiredOutputVoltage(clampAndConvertToRaw(currentValue));
 }
 void ThresholdController::setDesiredOutputVoltage(float value){
 	_fpgaInterface.setDesiredOutputVoltage(clampAndConvertToRaw(value));
+	LOG_INFO("Set threshold voltage as %d ", value);
 	Flash::setFloat(FLASH_NAMESPACE, DESIRED_OUTPUT_VOLTAGE, value);
 	_desiredOutputVoltage = value;
 }

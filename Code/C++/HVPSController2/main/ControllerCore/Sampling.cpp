@@ -38,6 +38,7 @@ bool Sampling::runNCycles(
 	std::unique_ptr<uint8_t[]>& sampleBytes,
 	size_t& sampleBytesLength
 ){
+	LOG_INFO("nCycles is: %" PRIu8, nCycles);
 	setInputData(fpgaInterface, nCycles);
 	setCommand(fpgaInterface, FPGACommand::RUN_N_CYCLES);
 	if(!waitForState(fpgaInterface, FPGAState::RAN_N_CYCLES)){
@@ -59,7 +60,7 @@ bool Sampling::readSampleBytes(HVPS_FPGAInterface& fpgaInterface, std::string& e
 	if(!readNextBytes(fpgaInterface, buffered_data, errorMessage)){
 		return false;
 	}
-	size_t bufferLength = (size_t)buffered_data[1] << 8 | buffered_data[0];
+	size_t bufferLength = ((size_t)buffered_data[1] << 8) | buffered_data[0];
 	if(bufferLength < 2){
 		errorMessage = "Invalid buffer length";
 		return false;

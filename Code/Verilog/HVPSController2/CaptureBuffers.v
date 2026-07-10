@@ -6,7 +6,8 @@ module CaptureBuffers(
     input wire [7:0] first_stage_voltage_raw,
     output reg [INTERFACE_BUFFERED_DATA_LAST_INDEX:0] output_buffered_data,
     input wire next_data_out,
-    output reg next_data_ready
+    output reg next_data_ready,
+	 input wire[11:0] divider_count
 );
 
 localparam STATE_IDLE = 3'd0;
@@ -20,7 +21,7 @@ localparam STATE_NEXT_DATA_OUT = 3'd7;
 
 reg [2:0] state = STATE_IDLE;
 
-reg [4:0] divider = 0;
+reg [12:0] divider = 0;
 reg [9:0] n_byte_shifts_left_to_do = 10'd0;
 reg [9:0] n_captured_bytes_left_to_shift = 10'd0;
 reg [2:0] read_bit = 0;
@@ -125,15 +126,15 @@ always @(posedge clk_50Mhz) begin
 				state <= STATE_IDLE;
 			end
 			else begin
-				if(divider<5'd20)begin
-					divider <= divider + 5'd1;
+				if((divider<divider_count)||(divider<12'd20))begin
+					divider <= divider + 12'd1;
 				end
 				else begin
 					divider <= 0;
 				end
 				if(next_write_address < CAPTURE_BUFFERS_RAM_LAST_INDEX)begin
 					case(divider)
-						5'd18:
+						12'd18:
 						begin
 							next_write_address <= next_write_address + 10'd1;
 							bytes_length  <= bytes_length + 10'd1;
@@ -141,7 +142,7 @@ always @(posedge clk_50Mhz) begin
 							ram_data_write <= primary_current_raw;
 							ram_do_write <= 1;
 						end
-						5'd19:
+						12'd19:
 						begin
 						  next_write_address <= next_write_address + 10'd1;
 						  bytes_length  <= bytes_length + 10'd1;
@@ -149,7 +150,7 @@ always @(posedge clk_50Mhz) begin
 						  ram_data_write <= output_voltage_raw;
 						  ram_do_write <= 1;
 						end
-						5'd20:
+						12'd20:
 						begin
 							next_write_address <= next_write_address + 10'd1;
 							bytes_length  <= bytes_length + 10'd1;

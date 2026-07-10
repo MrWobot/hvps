@@ -6,7 +6,7 @@ namespace HVPSGenerateConfigurationClassesAndMatlabParameters
     {
         public static SpreadsheetVariable[] Read(string filePath, string variableNameColumnTitle, string variableNameColumn, string valueColumn)
         {
-            using var workbook = new XLWorkbook(filePath);
+                using var workbook = new XLWorkbook(filePath);
             var worksheet = workbook.Worksheet(1);
 
             // Specific cell

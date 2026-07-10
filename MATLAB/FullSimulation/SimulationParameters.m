@@ -1,12 +1,12 @@
 AD7822_Delay = 6.6E-07;
 C = 1.2E-06;
 f_sw = 16000;
-i_p_threshold = 10;
+i_p_threshold = 10.5;
 L_leak = 6.6E-06;
-L_mag = 4.2351562500000024E-05;
-n = 0.22;
+L_mag = 5.3400000000000004E-05;
+n = 0.11764705882352941;
 R_p = 0.1;
 R_s = 3.5;
-V_bus = 44.1;
+V_bus = 30;
 V_first_threshold = 400;
 V_out_threshold = 4000;

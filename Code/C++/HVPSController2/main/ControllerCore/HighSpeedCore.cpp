@@ -70,17 +70,17 @@ float HighSpeedCore::getFrequencyHz(ValueBoundType& valueBoundType){
 float HighSpeedCore::getActualPeakPrimaryCurrent(){
 	uint8_t raw = _fpgaInterface.getActualPeakPrimaryCurrent();
 	//LOG_INFO("raw peak primary current: %" PRIu8, raw);
-	return _hvpsConfiguration1.primaryCurrentFromRaw * static_cast<float>(raw);
+	return static_cast<float>(_hvpsConfiguration1.primaryCurrentFromRaw) * static_cast<float>(raw);
 }
 float HighSpeedCore::getActualOutputVoltage(){
 	uint8_t raw = _fpgaInterface.getActualOutputVoltage();
 	//LOG_INFO("raw output voltage: %" PRIu8, raw);
-	return _hvpsConfiguration1.outputVoltageFromRaw * static_cast<float>(raw);
+	return static_cast<float>(_hvpsConfiguration1.outputVoltageFromRaw) * static_cast<float>(raw);
 }
 float HighSpeedCore::getActualFirstStageVoltage(){
 	uint8_t raw = _fpgaInterface.getActualFirstStageVoltage();
 	//LOG_INFO("raw first stage voltage: %" PRIu8, raw);
-	return _hvpsConfiguration1.firstStageVoltageFromRaw * static_cast<float>(raw);
+	return static_cast<float>(_hvpsConfiguration1.firstStageVoltageFromRaw) * static_cast<float>(raw);
 }
 void HighSpeedCore::start(){
 	setDesiredSystemState(SystemState::Live);
@@ -132,6 +132,7 @@ void HighSpeedCore::calculateInductance(){
 	setDesiredSystemState(SystemState::CalculatingInductance);
 }
 void HighSpeedCore::runNCycles(uint8_t nCycles){
+	LOG_INFO("nCycles isis: %" PRIu8, nCycles);
 	_runNCycles_nCycles.store(nCycles, std::memory_order_relaxed);
 	setDesiredSystemState(SystemState::RunningNCycles);
 }

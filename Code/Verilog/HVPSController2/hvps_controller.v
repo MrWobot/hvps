@@ -91,6 +91,7 @@ module hvps_controller(
 	 wire first_stage_voltage_adc_timed_out;
 	 wire output_voltage_adc_timed_out;
 	 wire clear_error;
+	 wire[11:0] captures_buffer_divider_count;
 	 ErrorsManager(
 		 .clk_50MHz(clk),
 		 .primary_current_adc_timed_out(primary_current_adc_timed_out),
@@ -194,7 +195,8 @@ module hvps_controller(
 		 .first_stage_voltage_raw(first_stage_voltage_raw),
 		 .output_buffered_data(buffered_data),
 		 .next_data_out(next_data_out),
-		 .next_data_ready(next_data_ready)
+		 .next_data_ready(next_data_ready),
+		 .divider_count(captures_buffer_divider_count)
 	  );
 	  CommandHandler command_handler(
 			.clk_50Mhz(clk),
@@ -208,7 +210,8 @@ module hvps_controller(
 			.next_data_out(next_data_out),
 			.next_data_ready(next_data_ready),
 			.clear_error(clear_error),
-			.test(test)
+			.test(test),
+			.captures_buffer_divider_count(captures_buffer_divider_count)
 	  );
 	  HBridge hBridge(
 		 .clk(clk),           // 50MHz system clock

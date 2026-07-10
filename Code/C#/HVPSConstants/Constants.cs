@@ -30,11 +30,16 @@ namespace HVPSConstants
         [ExcelSpreadsheetVariable]
         public float MaxPrimaryCurrent { get; }
         [ExcelSpreadsheetVariable]
+        public float MaxPrimaryCurrentFactoringInADCConversionTime { get; }
+        [ExcelSpreadsheetVariable]
         public float TransformerLeakageInductance { get; }
         public static uint PingTimeoutMilliseconds => 10000;
         public static UInt32 SendPingIntervalMilliseconds => 2000;
+        public int FrequencyHz => 16000;
+        public int FPGAClockHz => 50000000;
         public int FpgaInterfaceBufferedDataLength { get; }
         public int FpgaCaptureBuffersLengthBytes { get; }
+        public int FpgaCaptureBuffersFastestSampleRateDividerCount { get; }
         public RGB IdleColour { get; }
         public RGB LiveColour { get; }
         public RGB RunningSystemChecksColour { get; }
@@ -63,10 +68,12 @@ namespace HVPSConstants
             float maxFirstStageVoltage,
             float maxSupplyVoltage,
             float maxPrimaryCurrent,
+            float maxPrimaryCurrentFactoringInADCConversionTime,
             float transformerLeakageInductance,
             float maxADCConversionTime,
             int fpgaInterfaceBufferedDataLength = 128,
             int fpgaCaptureBuffersLengthBytes = 768,
+            int fpgaCaptureBuffersFastestSampleRateDividerCount = 20,
             RGB? idleColour = null,
             RGB? liveColour = null,
             RGB? runningSystemChecksColour = null,
@@ -97,11 +104,12 @@ namespace HVPSConstants
             MaxADCConversionTime = maxADCConversionTime;
             MaxSupplyVoltage = maxSupplyVoltage;
             MaxPrimaryCurrent = maxPrimaryCurrent;
+            MaxPrimaryCurrentFactoringInADCConversionTime = maxPrimaryCurrentFactoringInADCConversionTime;
             TransformerLeakageInductance = transformerLeakageInductance;
 
             FpgaInterfaceBufferedDataLength = fpgaInterfaceBufferedDataLength;
             FpgaCaptureBuffersLengthBytes = fpgaCaptureBuffersLengthBytes;
-
+            FpgaCaptureBuffersFastestSampleRateDividerCount = fpgaCaptureBuffersFastestSampleRateDividerCount;
             // LED Colours
             IdleColour = idleColour ?? new RGB("#24aee0");
             LiveColour = liveColour ?? new RGB("#ff0000");

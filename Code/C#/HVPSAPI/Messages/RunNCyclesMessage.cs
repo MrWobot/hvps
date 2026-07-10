@@ -11,7 +11,7 @@ namespace HVPSAPI.Messages
         [JsonPropertyName(RunNCyclesMessageDataMemberNames.NCycles)]
         [JsonInclude]
         [DataMember(Name = RunNCyclesMessageDataMemberNames.NCycles)]
-        public byte NCycles { get; }
+        public byte NCycles { get; protected set; }
         protected RunNCyclesMessage():base()
         {
             Type = MessageTypes.RunNCycles;

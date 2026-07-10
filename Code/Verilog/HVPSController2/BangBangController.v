@@ -11,7 +11,7 @@ module BangBangController(
 assign can_drive =
 					(primary_current_raw < MAX_PRIMARY_CURRENT)
 					&&(first_stage_voltage_raw < MAX_FIRST_STAGE_VOLTAGE)
-					&&(output_voltage_raw < desired_output_voltage)
+					//&&(output_voltage_raw < desired_output_voltage)
 					&&(output_voltage_raw < MAX_OUTPUT_VOLTAGE)
 					&& (!in_error)
 					;
